@@ -4,10 +4,10 @@
   "description": "protobuf rpc over binary websockets",
   "author": "Johan Nordberg",
   "license": "BSD-3-Clause",
-  "index": "lib6/index.js",
-  "type": "lib6/index.d.ts",
+  "main": "./lib6/index",
+  "typings": "./lib6/index",
   "browser": {
-    "./lib6/index.js": "./lib3/client.js",
+    "./lib6/index": "./lib3/client.js",
     "ws": "./ws-browser.js"
   },
   "files": [
