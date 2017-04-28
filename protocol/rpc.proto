@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+message Message {
+    enum Type { REQUEST = 1; RESPONSE = 2; EVENT = 3; }
+    required Type type = 1;
+    optional Request request = 2;
+    optional Response response = 3;
+    optional Event event = 4;
+}
+
+message Request {
+    required string method = 1;
+    required uint32 seq = 2;
+    optional bytes payload = 3;
+}
+
+message Response {
+    required uint32 seq = 1;
+    required bool ok = 2;
+    optional bytes payload = 3;
+    optional string error = 4;
+}
+
+message Event {
+    required string name = 1;
+    optional bytes payload = 2;
+}

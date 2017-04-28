@@ -1,0 +1,6 @@
+node_modules/
+lib3/
+lib6/
+coverage/
+protocol/*
+!protocol/*.proto

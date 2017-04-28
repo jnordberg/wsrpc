@@ -1,0 +1,48 @@
+{
+  "name": "wsrpc",
+  "version": "1.0.0",
+  "description": "protobuf rpc over binary websockets",
+  "author": "Johan Nordberg",
+  "license": "BSD-3-Clause",
+  "index": "lib6/index.js",
+  "type": "lib6/index.d.ts",
+  "browser": {
+    "./lib6/index.js": "./lib3/client.js",
+    "ws": "./ws-browser.js"
+  },
+  "files": [
+    "lib3/*",
+    "lib6/*",
+    "protocol/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jnordberg/wsrpc"
+  },
+  "scripts": {
+    "prepublishOnly": "make test && make all",
+    "test": "make test"
+  },
+  "keywords": [
+    "websocket",
+    "cat"
+  ],
+  "dependencies": {
+    "protobufjs": "github:dcodeio/protobuf.js#3a95945",
+    "uws": "^0.14.3",
+    "verror": "^1.9.0",
+    "ws": "^2.3.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.41",
+    "@types/uws": "^0.13.0",
+    "@types/verror": "^1.9.3",
+    "@types/ws": "0.0.40",
+    "browserify": "^14.3.0",
+    "mocha": "^3.3.0",
+    "nyc": "^10.2.0",
+    "ts-node": "^3.0.2",
+    "tslint": "^5.1.0",
+    "typescript": "^2.2.2"
+  }
+}
