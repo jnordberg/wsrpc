@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+service Painter {
+    rpc Paint (PaintMessage) returns (Empty) {}
+}
+
+message Empty {}
+
+message PaintMessage {
+    required float x = 1;
+    required float y = 2;
+    required int32 color = 3;
+}
+
+message StatusMessage {
+    required int32 users = 1;
+}
+

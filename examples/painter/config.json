@@ -1,0 +1,14 @@
+{
+  "browserify": {
+    "extensions": [".js", ".ts"],
+    "plugins": ["tsify"]
+  },
+  "nunjucks": {
+    "autoescape": false
+  },
+  "plugins": [
+    "wintersmith-browserify",
+    "wintersmith-nunjucks",
+    "wintersmith-livereload"
+  ]
+}

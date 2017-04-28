@@ -1,0 +1,13 @@
+{
+  "name": "wsrpc-example-painter",
+  "private": true,
+  "dependencies": {
+    "protobufjs": "github:dcodeio/protobuf.js#3a95945",
+    "tsify": "^3.0.1",
+    "typescript": "^2.3.1",
+    "wintersmith": "^2.3.6",
+    "wintersmith-browserify": "^1.2.1",
+    "wintersmith-livereload": "^0.2.2",
+    "wintersmith-nunjucks": "^1.1.0"
+  }
+}
