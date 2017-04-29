@@ -21,8 +21,8 @@
     "url": "https://github.com/jnordberg/wsrpc"
   },
   "scripts": {
-    "prepublishOnly": "make test && make docs && make all",
-    "test": "make test"
+    "prepublishOnly": "make lint && make test && make docs && make lib",
+    "test": "make lint && make test"
   },
   "keywords": [
     "protobuf",

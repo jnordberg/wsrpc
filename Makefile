@@ -5,8 +5,8 @@ PATH  := ./node_modules/.bin:$(PATH)
 PROTO_FILES := $(wildcard protocol/*.proto)
 PROTO_DEFS  := $(PROTO_FILES:.proto=.d.ts)
 
-.PHONY: all
-all: lib3 lib6
+.PHONY: lib
+lib: lib3 lib6
 
 .PHONY: proto
 proto: $(PROTO_DEFS)
