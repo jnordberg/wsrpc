@@ -138,6 +138,9 @@ export interface IPaintMessage {
     /** PaintMessage y */
     y: number;
 
+    /** PaintMessage size */
+    size: number;
+
     /** PaintMessage color */
     color: number;
 }
@@ -156,6 +159,9 @@ export class PaintMessage {
 
     /** PaintMessage y. */
     public y: number;
+
+    /** PaintMessage size. */
+    public size: number;
 
     /** PaintMessage color. */
     public color: number;

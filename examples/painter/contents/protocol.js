@@ -209,6 +209,7 @@ $root.PaintMessage = (function() {
      * @interface IPaintMessage
      * @property {number} x PaintMessage x
      * @property {number} y PaintMessage y
+     * @property {number} size PaintMessage size
      * @property {number} color PaintMessage color
      */
 
@@ -239,6 +240,12 @@ $root.PaintMessage = (function() {
     PaintMessage.prototype.y = 0;
 
     /**
+     * PaintMessage size.
+     * @type {number}
+     */
+    PaintMessage.prototype.size = 0;
+
+    /**
      * PaintMessage color.
      * @type {number}
      */
@@ -264,7 +271,8 @@ $root.PaintMessage = (function() {
             writer = $Writer.create();
         writer.uint32(/* id 1, wireType 5 =*/13).float(message.x);
         writer.uint32(/* id 2, wireType 5 =*/21).float(message.y);
-        writer.uint32(/* id 3, wireType 0 =*/24).int32(message.color);
+        writer.uint32(/* id 3, wireType 5 =*/29).float(message.size);
+        writer.uint32(/* id 4, wireType 0 =*/32).int32(message.color);
         return writer;
     };
 
@@ -300,6 +308,9 @@ $root.PaintMessage = (function() {
                 message.y = reader.float();
                 break;
             case 3:
+                message.size = reader.float();
+                break;
+            case 4:
                 message.color = reader.int32();
                 break;
             default:
@@ -311,6 +322,8 @@ $root.PaintMessage = (function() {
             throw $util.ProtocolError("missing required 'x'", { instance: message });
         if (!message.hasOwnProperty("y"))
             throw $util.ProtocolError("missing required 'y'", { instance: message });
+        if (!message.hasOwnProperty("size"))
+            throw $util.ProtocolError("missing required 'size'", { instance: message });
         if (!message.hasOwnProperty("color"))
             throw $util.ProtocolError("missing required 'color'", { instance: message });
         return message;
@@ -341,6 +354,8 @@ $root.PaintMessage = (function() {
             return "x: number expected";
         if (typeof message.y !== "number")
             return "y: number expected";
+        if (typeof message.size !== "number")
+            return "size: number expected";
         if (!$util.isInteger(message.color))
             return "color: integer expected";
         return null;
@@ -359,6 +374,8 @@ $root.PaintMessage = (function() {
             message.x = Number(object.x);
         if (object.y != null)
             message.y = Number(object.y);
+        if (object.size != null)
+            message.size = Number(object.size);
         if (object.color != null)
             message.color = object.color | 0;
         return message;
@@ -377,12 +394,15 @@ $root.PaintMessage = (function() {
         if (options.defaults) {
             object.x = 0;
             object.y = 0;
+            object.size = 0;
             object.color = 0;
         }
         if (message.x != null && message.hasOwnProperty("x"))
             object.x = options.json && !isFinite(message.x) ? String(message.x) : message.x;
         if (message.y != null && message.hasOwnProperty("y"))
             object.y = options.json && !isFinite(message.y) ? String(message.y) : message.y;
+        if (message.size != null && message.hasOwnProperty("size"))
+            object.size = options.json && !isFinite(message.size) ? String(message.size) : message.size;
         if (message.color != null && message.hasOwnProperty("color"))
             object.color = message.color;
         return object;

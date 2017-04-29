@@ -9,10 +9,10 @@ message Empty {}
 message PaintMessage {
     required float x = 1;
     required float y = 2;
-    required int32 color = 3;
+    required float size = 3;
+    required int32 color = 4;
 }
 
 message StatusMessage {
     required int32 users = 1;
 }
-
