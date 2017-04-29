@@ -19,6 +19,11 @@ coverage: node_modules
 test: node_modules $(PROTO_DEFS)
 	mocha --require ts-node/register test/*.ts
 
+.PHONY: ci-test
+ci-test: node_modules $(PROTO_DEFS)
+	tslint -p tsconfig.json -c tslint.json
+	nyc -r lcov -e .ts -i ts-node/register -n "src/*.ts" mocha --reporter tap --require ts-node/register test/*.ts
+
 .PHONY: lint
 lint: node_modules
 	tslint -p tsconfig.json -c tslint.json -t stylish --fix

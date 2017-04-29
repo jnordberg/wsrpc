@@ -4,3 +4,4 @@ lib6/
 coverage/
 protocol/*
 !protocol/*.proto
+.nyc_output/

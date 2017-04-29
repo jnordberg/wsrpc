@@ -22,7 +22,7 @@
   },
   "scripts": {
     "prepublishOnly": "make lint && make test && make docs && make lib",
-    "test": "make lint && make test"
+    "test": "make ci-test"
   },
   "keywords": [
     "protobuf",
@@ -46,6 +46,7 @@
     "@types/verror": "^1.9.3",
     "@types/ws": "0.0.40",
     "browserify": "^14.3.0",
+    "coveralls": "^2.13.1",
     "mocha": "^3.3.0",
     "nyc": "^10.2.0",
     "ts-node": "^3.0.2",
