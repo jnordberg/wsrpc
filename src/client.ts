@@ -134,12 +134,13 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
      * @param service The protocol buffer service class to use, an instance of this
      *                will be available as {@link Client.service}.
      */
-    constructor(address: string, service: {new(rpcImpl: protobuf.RPCImpl): T}, options: IClientOptions = {}) {
+    constructor(address: string, service: {create(rpcImpl: protobuf.RPCImpl): T}, options: IClientOptions = {}) {
         super()
 
         this.address = address
         this.options = options
-        this.service = new service(this.rpcImpl)
+        this.service = service.create(this.rpcImpl)
+
         this.eventTypes = options.eventTypes || {}
         this.backoff = options.backoff || defaultBackoff
         this.writeMessage = process.title === 'browser' ? this.writeMessageBrowser : this.writeMessageNode
