@@ -16,7 +16,7 @@ coverage: node_modules
 	nyc -r html -r text -e .ts -i ts-node/register -n "src/*.ts" mocha --reporter nyan --require ts-node/register test/*.ts
 
 .PHONY: test
-test: node_modules
+test: node_modules $(PROTO_DEFS)
 	mocha --require ts-node/register test/*.ts
 
 .PHONY: lint
