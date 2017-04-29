@@ -1,7 +1,36 @@
 /**
- * # wsrpc
- * ## server implementation
- * author: Johan Nordberg <code@johan-nordberg.com>
+ * @file RPC Client implementation.
+ * @author Johan Nordberg <code@johan-nordberg.com>
+ * @license
+ * Copyright (c) 2017 Johan Nordberg. All Rights Reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *  1. Redistribution of source code must retain the above copyright notice, this
+ *     list of conditions and the following disclaimer.
+ *
+ *  2. Redistribution in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the documentation
+ *     and/or other materials provided with the distribution.
+ *
+ *  3. Neither the name of the copyright holder nor the names of its contributors
+ *     may be used to endorse or promote products derived from this software without
+ *     specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * You acknowledge that this software is not designed, licensed or intended for use
+ * in the design, construction, operation or maintenance of any military facility.
  */
 
 import {EventEmitter} from 'events'
@@ -23,6 +52,12 @@ interface IRPCMessage {
     timer?: NodeJS.Timer,
 }
 
+/**
+ * RPC Client options
+ * ------------------
+ * *Note* - The options inherited from `WebSocket.IClientOptions` are only
+ * valid when running in node.js, they have no effect in the browser.
+ */
 export interface IClientOptions extends WebSocket.IClientOptions {
     /**
      * Event names to protobuf types, any event assigned a type will have
@@ -30,29 +65,57 @@ export interface IClientOptions extends WebSocket.IClientOptions {
      */
     eventTypes?: {[name: string]: IProtobufType}
     /**
-     * Retry backoff function, returns milliseconds, default = tries*10**2.
+     * Retry backoff function, returns milliseconds. Default = {@link defaultBackoff}.
      */
     backoff?: (tries: number) => number
     /**
-     * Automatically connect, default = true.
+     * Whether to connect when {@link Client} instance is created. Default = `true`.
      */
     autoConnect?: boolean
     /**
-     * How long in milliseconds before a message times out, default = 5 * 1000.
-     * Set to 0 to disable.
+     * How long in milliseconds before a message times out, set to `0` to disable.
+     * Default = `5 * 1000`.
      */
     sendTimeout?: number
 }
 
+/**
+ * RPC Client events
+ * -----------------
+ */
 export interface IClientEvents {
+    /**
+     * Emitted when the connection closes/opens.
+     */
     on(event: 'open' | 'close', listener: () => void): this
+    /**
+     * Emitted on error, throws if there is no listener.
+     */
     on(event: 'error', listener: (error: Error) => void): this
-    on(event: 'event', listener: (name: string, data?: Uint8Array) => void): this
+    /**
+     * RPC event sent by the server. If the event name is given a type
+     * constructor in {@link IClientOptions.eventTypes} the data will
+     * be decoded before the event is emitted.
+     */
+    on(event: 'event', listener: (name: string, data?: Uint8Array|{[k: string]: any}) => void): this
+    on(event: 'event <name>', listener: (data?: Uint8Array|{[k: string]: any}) => void): this
 }
 
+/**
+ * RPC Client
+ * ----------
+ * Can be used in both node.js and the browser. Also see {@link IClientOptions}.
+ */
 export class Client<T extends protobuf.rpc.Service> extends EventEmitter implements IClientEvents {
 
+    /**
+     * Client options, *readonly*.
+     */
     public readonly options: IClientOptions
+
+    /**
+     * The protobuf service instance which holds all the rpc methods defined in your protocol.
+     */
     public readonly service: T
 
     private active: boolean = false
@@ -66,6 +129,11 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
     private socket?: WebSocket
     private writeMessage: (message: RPC.IMessage) => Promise<void>
 
+    /**
+     * @param address The address to the {@link Server}, eg `ws://example.com:8042`.
+     * @param service The protocol buffer service class to use, an instance of this
+     *                will be available as {@link Client.service}.
+     */
     constructor(address: string, service: {new(rpcImpl: protobuf.RPCImpl): T}, options: IClientOptions = {}) {
         super()
 
@@ -82,19 +150,16 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
         }
     }
 
+    /**
+     * Return `true` if the client is connected, otherwise `false`.
+     */
     public isConnected(): boolean {
         return (this.socket !== undefined && this.socket.readyState === WebSocket.OPEN)
     }
 
-    public async disconnect() {
-        this.active = false
-        if (!this.socket) { return }
-        if (this.socket.readyState !== WebSocket.CLOSED) {
-            this.socket.close()
-            await waitForEvent(this, 'close')
-        }
-    }
-
+    /**
+     * Connect to the server.
+     */
     public async connect() {
         this.active = true
         if (this.socket) { return }
@@ -114,6 +179,18 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
         this.socket.addEventListener('error', (error) => { this.emit('error', error) })
 
         await Promise.race([waitForEvent(this, 'open'), waitForEvent(this, 'close')])
+    }
+
+    /**
+     * Disconnect from the server.
+     */
+    public async disconnect() {
+        this.active = false
+        if (!this.socket) { return }
+        if (this.socket.readyState !== WebSocket.CLOSED) {
+            this.socket.close()
+            await waitForEvent(this, 'close')
+        }
     }
 
     private retryHandler = () => {
@@ -271,6 +348,10 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
 
 }
 
+/**
+ * Default backoff function.
+ * ```min(tries*10^2, 1 minute)```
+ */
 const defaultBackoff = (tries: number): number => {
     return Math.min(Math.pow(tries * 10, 2), 60 * 1000)
 }
