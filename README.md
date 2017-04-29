@@ -4,7 +4,7 @@
 node.js/browser protobuf rpc over binary websockets.
 
 * **[Demo](https://johan-nordberg.com/wspainter)** ([source](https://github.com/jnordberg/wsrpc/tree/master/examples/painter))
-* [Documentation](https://jnordberg.github.io/wsrpc)
+* [Documentation](https://jnordberg.github.io/wsrpc/)
 * [Issues](https://github.com/jnordberg/wsrpc/issues)
 
 ---
