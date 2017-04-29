@@ -43,8 +43,9 @@ node_modules:
 
 .PHONY: docs
 docs: node_modules
-	typedoc --target ES6 --mode file --out docs src
+	typedoc --gitRevision master --target ES6 --mode file --out docs src
 	find docs -name "*.html" | xargs sed -i '' 's~$(shell pwd)~.~g'
+	echo "Served at <https://jnordberg.github.io/wsrpc/>" > docs/README.md
 
 .PHONY: clean
 clean:
