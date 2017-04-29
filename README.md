@@ -1,5 +1,5 @@
 
-# [wsrpc](https://github.com/jnordberg/wsrpc)
+# [wsrpc](https://github.com/jnordberg/wsrpc) [![Build Status](https://travis-ci.org/jnordberg/wsrpc.svg?branch=master)](https://travis-ci.org/jnordberg/wsrpc) [![Coverage Status](https://coveralls.io/repos/github/jnordberg/wsrpc/badge.svg?branch=master)](https://coveralls.io/github/jnordberg/wsrpc?branch=master) [![Package Version](https://img.shields.io/npm/v/wsrpc.svg)](https://www.npmjs.com/package/wsrpc) ![License](https://img.shields.io/npm/l/wsrpc.svg)
 
 node.js/browser protobuf rpc over binary websockets.
 
