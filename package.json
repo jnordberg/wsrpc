@@ -1,7 +1,7 @@
 {
   "name": "wsrpc",
   "version": "1.0.1",
-  "description": "protobuf rpc over binary websockets",
+  "description": "node.js/browser protobuf rpc over binary websockets",
   "author": "Johan Nordberg",
   "license": "BSD-3-Clause",
   "main": "./lib6/index",
@@ -21,12 +21,18 @@
     "url": "https://github.com/jnordberg/wsrpc"
   },
   "scripts": {
-    "prepublishOnly": "make test && make all",
+    "prepublishOnly": "make test && make docs && make all",
     "test": "make test"
   },
   "keywords": [
+    "protobuf",
+    "protobuffer",
+    "protocol buffer",
+    "rpc",
+    "uws",
     "websocket",
-    "cat"
+    "websockets",
+    "ws"
   ],
   "dependencies": {
     "protobufjs": "github:dcodeio/protobuf.js#3a95945",
@@ -44,6 +50,7 @@
     "nyc": "^10.2.0",
     "ts-node": "^3.0.2",
     "tslint": "^5.1.0",
+    "typedoc": "^0.6.0",
     "typescript": "^2.2.2"
   }
 }

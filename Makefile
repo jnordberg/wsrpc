@@ -41,6 +41,11 @@ protocol/%.js: protocol/%.proto node_modules
 node_modules:
 	npm install
 
+.PHONY: docs
+docs: node_modules
+	typedoc --target ES6 --mode file --out docs src
+	find docs -name "*.html" | xargs sed -i '' 's~$(shell pwd)~.~g'
+
 .PHONY: clean
 clean:
 	rm -rf lib3/

@@ -66,8 +66,6 @@ export interface IServerEvents {
 export type Message = protobuf.Message<{}>|{[k: string]: any}
 export type Handler = (request: Message, connection: Connection) => Promise<Message>
 
-
-
 /**
  * RPC Server
  * ----------
