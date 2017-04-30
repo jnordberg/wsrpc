@@ -3,21 +3,22 @@ SHELL := /bin/bash
 PATH  := ./node_modules/.bin:$(PATH)
 
 .PHONY: preview
-preview: node_modules proto
-	node server.js &
-	wintersmith preview
+preview: node_modules protocol/service.d.ts protocol/service.js
+	wintersmith preview --chdir client
 
-.PHONY: proto
-proto: node_modules
-	pbjs -t static-module -w commonjs service.proto -o contents/protocol.js
-	pbts -o contents/protocol.d.ts contents/protocol.js
+protocol/service.js: node_modules protocol/service.proto
+	pbjs -t static-module -w commonjs protocol/service.proto -o protocol/service.js
+
+protocol/service.d.ts: node_modules protocol/service.js
+	pbts -o protocol/service.d.ts protocol/service.js
 
 node_modules:
 	npm install
 
 .PHONY: clean
 clean:
-	rm -f contents/protocol.js
+	rm -f protocol/service.js
+	rm -f protocol/service.d.ts
 
 .PHONY: distclean
 distclean: clean

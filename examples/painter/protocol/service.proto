@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+service Painter {
+    rpc GetCanvas (CanvasRequest) returns (CanvasResponse) {}
+    rpc Paint (PaintEvent) returns (Empty) {}
+}
+
+message Empty {}
+
+message PaintEvent {
+    required float x = 1;
+    required float y = 2;
+    required float size = 3;
+    required int32 color = 4;
+}
+
+message StatusEvent {
+    required int32 users = 1;
+}
+
+message CanvasRequest {
+    required int32 width = 1;
+    required int32 height = 2;
+}
+
+message CanvasResponse {
+    required bytes image = 1;
+}

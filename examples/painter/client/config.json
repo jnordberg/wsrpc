@@ -1,5 +1,6 @@
 {
   "browserify": {
+    "watchify": false,
     "extensions": [".js", ".ts"],
     "plugins": ["tsify"]
   },
