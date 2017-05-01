@@ -44,9 +44,15 @@ const server = new wsrpc.Server({
     service: proto.lookupService('Painter')
 })
 
-server.implement('paint', async (event) => {
+server.implement('paint', async (event, sender) => {
     shared.paint(event, ctx)
-    server.broadcast('paint', PaintEvent.encode(event).finish())
+    const broadcast = PaintEvent.encode(event).finish()
+    for (const connection of server.connections) {
+        if (connection === sender) {
+            continue
+        }
+        connection.send('paint', broadcast)
+    }
 })
 
 server.implement('getCanvas', async (request: CanvasRequest) => {

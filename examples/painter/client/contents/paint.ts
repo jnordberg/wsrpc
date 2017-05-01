@@ -36,7 +36,7 @@ if (window.performance) {
     now = () => Date.now()
 }
 
-const client = new Client('ws://192.168.1.33:4242', Painter, {
+const client = new Client('ws://localhost:4242', Painter, {
     sendTimeout: 5000,
     eventTypes: {
         paint: PaintEvent,
@@ -156,14 +156,16 @@ window.addEventListener('DOMContentLoaded', async () => {
             const dt = event.pos.timestamp - event.lastPos.timestamp
             velocity = Math.sqrt(dx*dx + dy*dy) / dt
         }
-        client.service.paint({
+        const msg = {
             x: event.pos.x,
             y: event.pos.y,
             color: event.color,
-            size: 20 + velocity * 20,
-        }).catch((error: Error) => {
+            size: 20 + velocity * 20
+        }
+        client.service.paint(msg).catch((error: Error) => {
             console.warn('error drawing', error.message)
         })
+        shared.paint(msg, ctx)
     }
 
     let mouseDraw: DrawEvent|undefined
@@ -246,5 +248,4 @@ window.addEventListener('DOMContentLoaded', async () => {
 })
 
 console.log(' ;-) ')
-window['colors'] = colors
 window['client'] = client

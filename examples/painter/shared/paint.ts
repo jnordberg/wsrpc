@@ -1,4 +1,4 @@
-import {PaintEvent} from './../protocol/service'
+import {IPaintEvent} from './../protocol/service'
 const Canvas = require('canvas')
 
 const brushSize = 124
@@ -51,7 +51,7 @@ function getBrush(color: number) {
     return brush
 }
 
-export function paint(p: PaintEvent, ctx: CanvasRenderingContext2D) {
+export function paint(p: IPaintEvent, ctx: CanvasRenderingContext2D) {
     ctx.globalAlpha = 0.4
     // ctx.globalCompositeOperation = 'overlay'
     ctx.fillStyle = '#' + p.color.toString(16)
