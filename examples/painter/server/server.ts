@@ -11,8 +11,8 @@ import * as shared from './../shared/paint'
 
 const proto = protobuf.loadSync(`${ __dirname }/../protocol/service.proto`)
 
-const width = 2024
-const height = 2024
+const width = 2048
+const height = 2048
 
 const canvas = new Canvas()
 canvas.width = width
@@ -37,7 +37,7 @@ function saveCanvas() {
     process.exit()
 }
 process.on('SIGINT', saveCanvas)
-process.on('exit', saveCanvas)
+// process.on('exit', saveCanvas)
 
 const server = new wsrpc.Server({
     port: 4242,
