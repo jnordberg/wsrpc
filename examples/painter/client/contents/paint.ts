@@ -1,6 +1,7 @@
 
 import {Client} from 'wsrpc'
 import {Painter, PaintEvent, StatusEvent} from './../../protocol/service'
+import * as zlib from 'browserify-zlib-next'
 import * as shared from './../../shared/paint'
 
 interface Position {
@@ -84,6 +85,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             colorWells.forEach((el) => el.classList.remove('active'))
             well.classList.add('active')
             activeColor = color
+            console.log(activeColor)
         })
         colorWells.push(well)
         colorPicker.appendChild(well)
@@ -104,29 +106,29 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     async function fetchCanvas() {
         const request = {
-            width: Math.min(window.innerWidth, 2048),
-            height: Math.min(window.innerHeight, 2048),
+            width: Math.min(window.innerWidth, shared.canvasWidth),
+            height: Math.min(window.innerHeight, shared.canvasHeight),
         }
         console.log('loading canvas...', request)
         const response = await client.service.getCanvas(request)
 
-        console.log(`response size: ${ ~~(response.image.length / 1000) }kb`)
+        console.log(`response size: ${ ~~(response.image.length / 1024) }kb`)
 
         const arr = response.image
         let buffer = Buffer.from(arr.buffer)
         buffer = buffer.slice(arr.byteOffset, arr.byteOffset + arr.byteLength)
 
-        await new Promise((resolve, reject) => {
-            const img = new Image()
-            img.src = 'data:image/jpeg;base64,' + buffer.toString('base64')
-            img.onload = () => {
-                ctx.drawImage(img, 0, 0)
-                resolve()
-            }
-            img.onerror = (error) => {
-                reject(error)
-            }
+        const data = await new Promise<Buffer>((resolve, reject) => {
+            zlib.gunzip(buffer, (error, result) => {
+                if (error) { reject(error) } else { resolve(result) }
+            })
         })
+
+        console.log(`decompressed: ${ ~~(data.length / 1024) }kb`)
+
+        const imageData = ctx.createImageData(request.width, request.height)
+        imageData.data.set(new Uint8ClampedArray(data.buffer))
+        ctx.putImageData(imageData, 0, 0)
     }
 
     let debounceTimer

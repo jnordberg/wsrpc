@@ -1,6 +1,9 @@
 import {IPaintEvent} from './../protocol/service'
 const Canvas = require('canvas')
 
+export const canvasWidth = process.env['CANVAS_WIDTH'] ? parseInt(process.env['CANVAS_WIDTH']) : 2048
+export const canvasHeight = process.env['CANVAS_HEIGHT'] ? parseInt(process.env['CANVAS_HEIGHT']) :2048
+
 const brushSize = 124
 const brushCache: {[color: number]: HTMLCanvasElement} = {}
 const brushImage = new Canvas.Image()
@@ -53,7 +56,7 @@ function getBrush(color: number) {
 
 export function paint(p: IPaintEvent, ctx: CanvasRenderingContext2D) {
     ctx.globalAlpha = 0.4
-    // ctx.globalCompositeOperation = 'overlay'
+    ctx.globalCompositeOperation = 'source-over'
     ctx.fillStyle = '#' + p.color.toString(16)
     let s = Math.min(p.size, 124)
     if (s < 1) { s = 1 }

@@ -1,9 +1,7 @@
-
-const wsrpc = require('wsrpc')
-const protobuf = require('protobufjs')
-const Canvas = require('canvas')
-const zlib = require('zlib')
-
+import * as wsrpc from 'wsrpc'
+import * as protobuf from 'protobufjs'
+import * as zlib from 'zlib'
+import * as Canvas from 'canvas'
 import * as fs from 'fs'
 
 import {PaintEvent, StatusEvent, CanvasRequest} from './../protocol/service'
@@ -11,14 +9,11 @@ import * as shared from './../shared/paint'
 
 const proto = protobuf.loadSync(`${ __dirname }/../protocol/service.proto`)
 
-const width = 2048
-const height = 2048
-
-const canvas = new Canvas()
-canvas.width = width
-canvas.height = height
-
+const canvas = new Canvas(shared.canvasWidth, shared.canvasHeight)
 const ctx = canvas.getContext('2d')
+ctx.patternQuality = 'fast'
+ctx.filter = 'fast'
+ctx.antialias = 'none'
 
 try {
     const img = new Canvas.Image()
@@ -30,21 +25,18 @@ try {
     }
 }
 
-function saveCanvas() {
+process.on('exit', () => {
     console.log('saving canvas')
-    var data = canvas.toBuffer()
-    fs.writeFileSync('canvas.png', data)
-    process.exit()
-}
-process.on('SIGINT', saveCanvas)
-// process.on('exit', saveCanvas)
+    fs.writeFileSync('canvas.png', canvas.toBuffer())
+})
+process.on('SIGINT', () => process.exit())
 
 const server = new wsrpc.Server({
     port: 4242,
     service: proto.lookupService('Painter')
 })
 
-server.implement('paint', async (event, sender) => {
+server.implement('paint', async (event: PaintEvent, sender) => {
     shared.paint(event, ctx)
     const broadcast = PaintEvent.encode(event).finish()
     for (const connection of server.connections) {
@@ -53,13 +45,20 @@ server.implement('paint', async (event, sender) => {
         }
         connection.send('paint', broadcast)
     }
+    return {}
 })
 
 server.implement('getCanvas', async (request: CanvasRequest) => {
-    if (request.width > width || request.height > height) {
+    if (request.width > shared.canvasWidth || request.height > shared.canvasHeight) {
         throw new Error('Too large')
     }
-    return {image: canvas.toBuffer()}
+    const imageData = ctx.getImageData(0, 0, request.width, request.height)
+    return new Promise((resolve, reject) => {
+        const buffer = Buffer.from(imageData.data.buffer)
+        zlib.gzip(buffer, (error, image) => {
+            if (error) { reject(error) } else { resolve({image}) }
+        })
+    })
 })
 
 const broadcastStatus = () => {
