@@ -32,7 +32,7 @@ try {
 
 function saveCanvas() {
     console.log('saving canvas')
-    var data = canvas.toBuffer(undefined, 3, canvas.PNG_FILTER_NONE)
+    var data = canvas.toBuffer()
     fs.writeFileSync('canvas.png', data)
     process.exit()
 }
@@ -59,13 +59,7 @@ server.implement('getCanvas', async (request: CanvasRequest) => {
     if (request.width > width || request.height > height) {
         throw new Error('Too large')
     }
-    const imageData = ctx.getImageData(0, 0, request.width, request.height)
-    return new Promise((resolve, reject) => {
-        const buffer = Buffer.from(imageData.data.buffer)
-        zlib.gzip(buffer, (error, image) => {
-            if (error) { reject(error) } else { resolve({image}) }
-        })
-    })
+    return {image: canvas.toBuffer()}
 })
 
 const broadcastStatus = () => {
