@@ -1,6 +1,6 @@
 
 import {Client} from 'wsrpc'
-import {Painter, PaintEvent, StatusEvent} from './../../protocol/service'
+import {Painter, PaintEvent, StatusEvent, IPaintEvent} from './../../protocol/service'
 import * as zlib from 'browserify-zlib-next'
 import * as shared from './../../shared/paint'
 
@@ -13,6 +13,7 @@ interface Position {
 interface DrawEvent {
     pos: Position
     lastPos?: Position
+    force?: number
     color: number
 }
 
@@ -85,7 +86,6 @@ window.addEventListener('DOMContentLoaded', async () => {
             colorWells.forEach((el) => el.classList.remove('active'))
             well.classList.add('active')
             activeColor = color
-            console.log(activeColor)
         })
         colorWells.push(well)
         colorPicker.appendChild(well)
@@ -104,7 +104,14 @@ window.addEventListener('DOMContentLoaded', async () => {
         shared.paint(event, ctx)
     })
 
+    const loadingEl = document.createElement('div')
+    loadingEl.className = 'loading'
+    loadingEl.innerHTML = 'Loading canvas...'
+    document.body.appendChild(loadingEl)
+
     async function fetchCanvas() {
+        document.documentElement.classList.add('loading')
+
         const request = {
             width: Math.min(window.innerWidth, shared.canvasWidth),
             height: Math.min(window.innerHeight, shared.canvasHeight),
@@ -129,6 +136,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         const imageData = ctx.createImageData(request.width, request.height)
         imageData.data.set(new Uint8ClampedArray(data.buffer))
         ctx.putImageData(imageData, 0, 0)
+
+        document.documentElement.classList.remove('loading')
     }
 
     let debounceTimer
@@ -142,30 +151,54 @@ window.addEventListener('DOMContentLoaded', async () => {
             canvas.width = window.innerWidth
             canvas.height = window.innerHeight
             clearTimeout(debounceTimer)
-            setTimeout(fetchCanvas, 1000)
+            debounceTimer = setTimeout(fetchCanvas, 500)
+            document.documentElement.classList.add('loading')
         }
     })
 
     await fetchCanvas()
 
-    function draw(event: DrawEvent) {
-        let velocity = 0
+    async function drawAsync(event: DrawEvent) {
+        let msgs: IPaintEvent[] = []
+        let size = 20
+        const color = event.color
+        if (event.force) {
+            size = Math.min(size + event.force * (shared.brushSize - 20), shared.brushSize)
+        }
         if (event.lastPos) {
             const dx = event.lastPos.x - event.pos.x
             const dy = event.lastPos.y - event.pos.y
-            const dt = event.pos.timestamp - event.lastPos.timestamp
-            velocity = Math.sqrt(dx*dx + dy*dy) / dt
+            const d = Math.sqrt(dx*dx + dy*dy)
+            if (!event.force) {
+                const dt = event.pos.timestamp - event.lastPos.timestamp
+                size = Math.min(size + 20 * (d / dt), shared.brushSize)
+            }
+            const interpSteps = ~~(d / (size / 4))
+            for (let i = 0; i < interpSteps; i++) {
+                const p = (i + 1) / (interpSteps + 1)
+                const x = event.lastPos.x * p + event.pos.x * (1 - p)
+                const y = event.lastPos.y * p + event.pos.y * (1 - p)
+                msgs.push({x, y, color, size})
+            }
         }
-        const msg = {
+        msgs.push({
             x: event.pos.x,
             y: event.pos.y,
             color: event.color,
-            size: 20 + velocity * 20
-        }
-        client.service.paint(msg).catch((error: Error) => {
-            console.warn('error drawing', error.message)
+            size: Math.min(size, shared.brushSize),
         })
-        shared.paint(msg, ctx)
+        let drawCalls = []
+        for (const msg of msgs) {
+            shared.paint(msg, ctx)
+            drawCalls.push(client.service.paint(msg))
+        }
+        await Promise.all(drawCalls)
+    }
+
+    function draw(event: DrawEvent) {
+        drawAsync(event).catch((error) => {
+            console.warn('error drawing', error)
+        })
     }
 
     let mouseDraw: DrawEvent|undefined
@@ -212,6 +245,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                     y: touch.screenY,
                     timestamp: now(),
                 },
+                force: touch['force'],
                 color: activeColor
             }
             draw(fingerDraw[touch.identifier])
@@ -230,6 +264,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                     y: touch.screenY,
                     timestamp: now(),
                 }
+                drawEvent.force = touch['force']
                 draw(drawEvent)
             }
         }

@@ -3,6 +3,7 @@ import * as protobuf from 'protobufjs'
 import * as zlib from 'zlib'
 import * as Canvas from 'canvas'
 import * as fs from 'fs'
+import * as path from 'path'
 
 import {PaintEvent, StatusEvent, CanvasRequest} from './../protocol/service'
 import * as shared from './../shared/paint'
@@ -31,6 +32,24 @@ process.on('exit', () => {
 })
 process.on('SIGINT', () => process.exit())
 
+let canvasDirty = false
+if (process.env['SAVE_INTERVAL'] && process.env['SAVE_DIR']) {
+    const interval = parseInt(process.env['SAVE_INTERVAL'])
+    const dir = process.env['SAVE_DIR']
+    console.log(`saving canvas to ${ dir } every ${ interval } seconds`)
+    const save = async () => {
+        if (!canvasDirty) {
+            console.log('canvas not dirty, skipping save')
+            return
+        }
+        const filename = path.join(dir, `canvas-${ new Date().toISOString() }.png`)
+        console.log(`saving canvas to ${ filename }`)
+        canvas.pngStream().pipe(fs.createWriteStream(filename))
+        canvasDirty = false
+    }
+    setInterval(save, interval * 1000)
+}
+
 const server = new wsrpc.Server({
     port: 4242,
     service: proto.lookupService('Painter')
@@ -38,6 +57,7 @@ const server = new wsrpc.Server({
 
 server.implement('paint', async (event: PaintEvent, sender) => {
     shared.paint(event, ctx)
+    canvasDirty = true
     const broadcast = PaintEvent.encode(event).finish()
     for (const connection of server.connections) {
         if (connection === sender) {
