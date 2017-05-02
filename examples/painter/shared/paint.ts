@@ -57,9 +57,8 @@ function getBrush(color: number) {
 export function paint(p: IPaintEvent, ctx: CanvasRenderingContext2D) {
     ctx.globalAlpha = 0.4
     ctx.globalCompositeOperation = 'source-over'
-    ctx.fillStyle = '#' + p.color.toString(16)
     let s = Math.min(p.size, 124)
     if (s < 1) { s = 1 }
     const o = s / 2
-    ctx.drawImage(getBrush(p.color), p.x - o, p.y - o, s, s)
+    ctx.drawImage(getBrush(p.color), ~~(p.x - o), ~~(p.y - o), ~~s, ~~s)
 }

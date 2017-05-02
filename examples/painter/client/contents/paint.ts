@@ -175,7 +175,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             pos: {
                 x: event.x,
                 y: event.y,
-                timestamp: event.timeStamp || now(),
+                timestamp: now(),
             },
             color: activeColor,
         }
@@ -189,7 +189,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             mouseDraw.pos = {
                 x: event.x,
                 y: event.y,
-                timestamp: event.timeStamp || now(),
+                timestamp: now(),
             }
             draw(mouseDraw)
         }
@@ -210,7 +210,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 pos: {
                     x: touch.screenX,
                     y: touch.screenY,
-                    timestamp: event.timeStamp || now(),
+                    timestamp: now(),
                 },
                 color: activeColor
             }
@@ -228,7 +228,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 drawEvent.pos = {
                     x: touch.screenX,
                     y: touch.screenY,
-                    timestamp: event.timeStamp || now(),
+                    timestamp: now(),
                 }
                 draw(drawEvent)
             }
