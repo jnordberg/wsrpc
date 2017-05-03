@@ -271,7 +271,6 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
 
     private writeMessageBrowser = async (message: RPC.IMessage) => {
         if (!this.socket) { throw new Error('No socket') }
-        // TODO: JSON fallback for browsers not supporting binary sockets
         const data = RPC.Message.encode(message).finish()
         this.socket.send(data)
     }
@@ -352,8 +351,8 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
 
 /**
  * Default backoff function.
- * ```min(tries*10^2, 1 minute)```
+ * ```min(tries*10^2, 10 seconds)```
  */
 const defaultBackoff = (tries: number): number => {
-    return Math.min(Math.pow(tries * 10, 2), 60 * 1000)
+    return Math.min(Math.pow(tries * 10, 2), 10 * 1000)
 }
