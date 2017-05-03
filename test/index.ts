@@ -7,27 +7,36 @@ import * as assert from 'assert'
 import * as path from 'path'
 import * as crypto from 'crypto'
 import {Server, Client} from './../src'
+import * as wsrpc_client from './../src/client'
 import {waitForEvent} from './../src/utils'
 import {TestService, TextMessage} from './../protocol/test'
 import * as rpcproto from './../protocol/rpc'
+import * as WebSocket from 'ws'
 
 const testPort = 1234
 const testAddr = `ws://localhost:${ testPort }`
 const testProtoPath = path.join(__dirname, './../protocol/test.proto')
 const testProto = protobuf.loadSync(testProtoPath)
 
+const serverOpts = {
+    port: testPort,
+    service: testProto.lookupService('TestService'),
+    pingInterval: 0.05,
+}
+
 describe('rpc', () => {
 
     let planError = false
-    const serverOpts = {
-        port: testPort,
-        service: testProto.lookupService('TestService'),
-        pingInterval: 0.05,
-    }
 
     let server = new Server(serverOpts)
 
     server.implement('echo', async (request: TextMessage) => {
+        if (request.text === 'throw-string') {
+            throw 'You should always trow an error object'
+        }
+        if (request.text === 'throw') {
+            throw new Error('Since you asked for it')
+        }
         return {text: request.text}
     })
 
@@ -59,10 +68,6 @@ describe('rpc', () => {
         }
     })
 
-    before(async () => {
-
-    })
-
     it('should throw when implementing invalid method', function() {
         assert.throws(() => {
             server.implement('kek', async () => { return {}})
@@ -84,8 +89,28 @@ describe('rpc', () => {
         assert.equal(response.text, 'HELLO WORLD')
     })
 
-    it('should handle unimplemented methods', async function() {
+    it('should handle thrown errors in implementation handler', async function() {
         planError = true
+        try {
+            await client.service.echo({text: 'throw'})
+            assert(false, 'should not be reached')
+        } catch (error) {
+            assert.equal(error.name, 'RPCError')
+            assert.equal(error.message, 'Since you asked for it')
+        }
+    })
+
+    it('should handle thrown strings in implementation handler', async function() {
+        try {
+            await client.service.echo({text: 'throw-string'})
+            assert(false, 'should not be reached')
+        } catch (error) {
+            assert.equal(error.name, 'RPCError')
+            assert.equal(error.message, 'You should always trow an error object')
+        }
+    })
+
+    it('should handle unimplemented methods', async function() {
         try {
             await client.service.notImplemented({})
             assert(false, 'should throw')
@@ -150,7 +175,6 @@ describe('rpc', () => {
             done()
         })
     })
-
 
     it('should emit event', function(done) {
         planError = false
@@ -218,7 +242,6 @@ describe('rpc', () => {
         assert.deepEqual(response.map((msg) => msg.text), ['fizz', 'buzz'])
     })
 
-
     it('should handle server disconnection', async function() {
         this.slow(300)
         const c = client as any
@@ -239,6 +262,26 @@ describe('rpc', () => {
         await waitForEvent(client, 'close')
     })
 
-
 })
 
+describe('rpc browser client', function() {
+    // simulated browser test using the ws module
+
+    let server: Server
+    let client: Client<TestService>
+
+    before(async function() {
+        (<any>wsrpc_client).WS = WebSocket
+        process.title = 'browser'
+        server = new Server(serverOpts)
+        server.implement('echo', async (request: TextMessage) => {
+            return {text: request.text}
+        })
+        client = new Client(testAddr, TestService)
+    })
+
+    it('should work', async function() {
+        const response = await client.service.echo({text: 'foo'})
+        assert.equal(response.text, 'foo')
+    })
+})
