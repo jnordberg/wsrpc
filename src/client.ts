@@ -35,10 +35,12 @@
 
 import {EventEmitter} from 'events'
 import * as protobuf from 'protobufjs/minimal'
+import * as WebSocket from 'uws'
 import {VError} from 'verror'
-import * as WebSocket from 'ws'
 import * as RPC from '../protocol/rpc'
 import {waitForEvent} from './utils'
+
+export let WS = WebSocket
 
 export interface IProtobufType {
     encode(message: any, writer?: protobuf.Writer): protobuf.Writer
@@ -155,7 +157,7 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
      * Return `true` if the client is connected, otherwise `false`.
      */
     public isConnected(): boolean {
-        return (this.socket !== undefined && this.socket.readyState === WebSocket.OPEN)
+        return (this.socket !== undefined && this.socket.readyState === WS.OPEN)
     }
 
     /**
@@ -165,20 +167,19 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
         this.active = true
         if (this.socket) { return }
         if (process.title === 'browser') {
-            this.socket = new WebSocket(this.address)
+            this.socket = new WS(this.address)
+            this.socket.addEventListener('message', this.messageHandler)
+            this.socket.addEventListener('open', this.openHandler)
+            this.socket.addEventListener('close', this.closeHandler)
+            this.socket.addEventListener('error', (error) => { this.emit('error', error) })
         } else {
-            this.socket = new WebSocket(this.address, this.options)
+            this.socket = new WS(this.address, this.options)
+            this.socket.onmessage = this.messageHandler
+            this.socket.onopen = this.openHandler
+            this.socket.onclose = this.closeHandler
+            this.socket.onerror = (error) => { this.emit('error', error) }
         }
-
-        // TODO: remove cast when merged - https://github.com/DefinitelyTyped/DefinitelyTyped/pull/16181
-        const socket = this.socket as any
-        socket.binaryType = 'arraybuffer'
-
-        this.socket.addEventListener('message', this.messageHandler)
-        this.socket.addEventListener('open', this.openHandler)
-        this.socket.addEventListener('close', this.closeHandler)
-        this.socket.addEventListener('error', (error) => { this.emit('error', error) })
-
+        (this.socket as any).binaryType = 'arraybuffer'
         await Promise.race([waitForEvent(this, 'open'), waitForEvent(this, 'close')])
     }
 
@@ -188,7 +189,7 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
     public async disconnect() {
         this.active = false
         if (!this.socket) { return }
-        if (this.socket.readyState !== WebSocket.CLOSED) {
+        if (this.socket.readyState !== WS.CLOSED) {
             this.socket.close()
             await waitForEvent(this, 'close')
         }
