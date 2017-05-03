@@ -171,13 +171,20 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
             this.socket.addEventListener('message', this.messageHandler)
             this.socket.addEventListener('open', this.openHandler)
             this.socket.addEventListener('close', this.closeHandler)
-            this.socket.addEventListener('error', (error) => { this.emit('error', error) })
+            this.socket.addEventListener('error', this.errorHandler)
         } else {
+            let didOpen = false
             this.socket = new WS(this.address, this.options)
             this.socket.onmessage = this.messageHandler
-            this.socket.onopen = this.openHandler
+            this.socket.onopen = () => {
+                didOpen = true
+                this.openHandler()
+            }
             this.socket.onclose = this.closeHandler
-            this.socket.onerror = (error) => { this.emit('error', error) }
+            this.socket.onerror = (error) => {
+                if (!didOpen) { this.closeHandler() }
+                this.errorHandler(error)
+            }
         }
         (this.socket as any).binaryType = 'arraybuffer'
         await Promise.race([waitForEvent(this, 'open'), waitForEvent(this, 'close')])
@@ -209,12 +216,14 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
         }
     }
 
+    private errorHandler = (error: Error) => {
+        this.emit('error', error)
+    }
+
     private openHandler = () => {
         this.numRetries = 0
         this.emit('open')
-        this.flushMessageBuffer().catch((error: Error) => {
-            this.emit('error', error)
-        })
+        this.flushMessageBuffer().catch(this.errorHandler)
     }
 
     private rpcImpl: protobuf.RPCImpl = (method, requestData, callback) => {
@@ -250,7 +259,7 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
 
     private rpcCallback = (seq: number, error: Error|null, response?: Uint8Array) => {
         if (!this.messageBuffer[seq]) {
-            this.emit('error', new VError({cause: error}, `Got response for unknown seqNo: ${ seq }`))
+            this.errorHandler(new VError({cause: error}, `Got response for unknown seqNo: ${ seq }`))
             return
         }
         const {callback, timer} = this.messageBuffer[seq]
@@ -315,7 +324,7 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
             }
         } catch (cause) {
             const error = new VError({cause, name: 'MessageError'}, 'got invalid message')
-            this.emit('error', error)
+            this.errorHandler(error)
         }
     }
 
@@ -336,7 +345,7 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
                     payload = type.decode(event.payload)
                 } catch (cause) {
                     const error = new VError({cause, name: 'EventError'}, 'could not decode event payload')
-                    this.emit('error', error)
+                    this.errorHandler(error)
                     return
                 }
             } else {
