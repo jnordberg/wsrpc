@@ -240,7 +240,15 @@ export class Connection extends EventEmitter {
         }
 
         const requestData = method.resolvedRequestType.decode(request.payload)
-        const responseData = await impl(requestData, this)
+        let responseData: Message
+        try {
+            responseData = await impl(requestData, this)
+        } catch (error) {
+            if (!(error instanceof Error)) {
+                error = new Error(String(error))
+            }
+            throw error
+        }
 
         const response = new RPC.Response({seq: request.seq, ok: true})
         response.payload = method.resolvedResponseType.encode(responseData).finish()
@@ -249,7 +257,6 @@ export class Connection extends EventEmitter {
     }
 
     private messageHandler = (data: any) => {
-        // TODO: support JSON for non-binary sockets
         let request: RPC.Request
         try {
             const message = RPC.Message.decode(new Uint8Array(data))
