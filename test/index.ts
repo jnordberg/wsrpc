@@ -242,19 +242,26 @@ describe('rpc', () => {
         assert.deepEqual(response.map((msg) => msg.text), ['fizz', 'buzz'])
     })
 
-    it('should handle server disconnection', async function() {
+    it('should retry', async function() {
         this.slow(300)
-        const c = client as any
-        c.sendTimeout = 1000
-
-        assert.equal(server.connections.length, 1)
-        server.connections[0].close()
+        server.close()
         await waitForEvent(client, 'close')
+        planError = true
+        // force a connection failure to simulate server being down for a bit
+        await client.connect()
+        planError = false
+        server = new Server(serverOpts)
+        await waitForEvent(client, 'open')
+    })
 
-        const buzz = client.service.echo({text: 'fizz'})
-        const fizz = client.service.echo({text: 'buzz'})
-        const response = await Promise.all([buzz, fizz])
-        assert.deepEqual(response.map((msg) => msg.text), ['fizz', 'buzz'])
+    it('should handle failed writes', async function() {
+        (<any> client).socket.send = () => { throw new Error('boom') }
+        try {
+            await client.service.echo({text: 'boom'})
+            assert(false, 'should not be reached')
+        } catch (error) {
+            assert.equal(error.message, 'boom')
+        }
     })
 
     it('should close server', async function() {
