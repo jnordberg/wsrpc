@@ -1,0 +1,8 @@
+{
+  "name": "wsrpc-example-node",
+  "private": true,
+  "dependencies": {
+    "protobufjs": "github:dcodeio/protobuf.js#3a95945",
+    "wsrpc": ">=1.1.0"
+  }
+}

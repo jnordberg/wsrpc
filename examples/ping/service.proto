@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+service PingService {
+    rpc Ping (Ping) returns (Pong) {}
+}
+
+message Ping {
+    bytes nonce = 1;
+}
+
+message Pong {
+    bytes nonce = 1;
+    uint32 time = 2;
+}
