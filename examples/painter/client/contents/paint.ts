@@ -346,7 +346,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     await fetchCanvas()
 
-    const vF = 0.2
+    const vF = 0.5
+    const vMax = 8
     async function drawAsync(event: DrawEvent) {
         let msgs: IPaintEvent[] = []
         let size = 20// * pixelRatio
@@ -358,9 +359,9 @@ window.addEventListener('DOMContentLoaded', async () => {
             const dx = event.lastPos.x - event.pos.x
             const dy = event.lastPos.y - event.pos.y
             const d = Math.sqrt(dx*dx + dy*dy)
-            if (!event.force) {
-                const dt = (event.pos.timestamp - event.lastPos.timestamp) + 0.0000001
-                let v = d / dt
+            if (!event.force && event.pos.timestamp !== event.lastPos.timestamp) {
+                const dt = event.pos.timestamp - event.lastPos.timestamp
+                let v = Math.min(d / dt, vMax)
                 if (event.lastV) {
                     v = event.lastV * (1 - vF) + v * vF
                 }
