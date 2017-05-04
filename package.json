@@ -8,7 +8,7 @@
   "typings": "./lib6/index",
   "browser": {
     "./lib6/index": "./lib3/client.js",
-    "ws": "./ws-browser.js"
+    "uws": "./ws-browser.js"
   },
   "files": [
     "lib3/*",
