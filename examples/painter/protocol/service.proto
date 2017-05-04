@@ -7,9 +7,13 @@ service Painter {
 
 message Empty {}
 
-message PaintEvent {
+message Position {
     required int32 x = 1;
     required int32 y = 2;
+}
+
+message PaintEvent {
+    required Position pos = 1;
     required uint32 size = 3;
     required uint32 color = 4;
 }
@@ -19,8 +23,15 @@ message StatusEvent {
 }
 
 message CanvasRequest {
-    required uint32 width = 1;
-    required uint32 height = 2;
+    enum Encoding {
+        PNG = 1;
+        JPEG = 2;
+        WEBP = 3;
+    }
+    required Position offset = 1;
+    required uint32 width = 2;
+    required uint32 height = 3;
+    required Encoding encoding = 4;
 }
 
 message CanvasResponse {

@@ -4,6 +4,7 @@ import * as zlib from 'zlib'
 import * as Canvas from 'canvas'
 import * as fs from 'fs'
 import * as path from 'path'
+import * as sharp from 'sharp'
 
 import {PaintEvent, StatusEvent, CanvasRequest} from './../protocol/service'
 import * as shared from './../shared/paint'
@@ -18,7 +19,7 @@ ctx.antialias = 'none'
 
 try {
     const img = new Canvas.Image()
-    img.src = fs.readFileSync('canvas.png')
+    img.src = fs.readFileSync('canvas.jpeg')
     ctx.drawImage(img, 0, 0)
 } catch (error) {
     if (error.code !== 'ENOENT') {
@@ -26,11 +27,23 @@ try {
     }
 }
 
-process.on('exit', () => {
-    console.log('saving canvas')
-    fs.writeFileSync('canvas.png', canvas.toBuffer())
+async function saveCanvas() {
+    const width = shared.canvasWidth
+    const height = shared.canvasHeight
+    const imageData = ctx.getImageData(0, 0, width, height)
+    const imageBuffer = Buffer.from(imageData.data.buffer)
+    await sharp(imageBuffer, {raw: {channels: 4, width, height}})
+        .background('#ffffff').flatten()
+        .jpeg({quality: 90, chromaSubsampling: '4:4:4'})
+        .toFile('canvas.jpeg')
+}
+
+process.on('SIGINT', async () => {
+    console.log('saving canvas...')
+    await saveCanvas()
+    console.log('saved')
+    process.exit()
 })
-process.on('SIGINT', () => process.exit())
 
 let canvasDirty = false
 if (process.env['SAVE_INTERVAL'] && process.env['SAVE_DIR']) {
@@ -39,12 +52,12 @@ if (process.env['SAVE_INTERVAL'] && process.env['SAVE_DIR']) {
     console.log(`saving canvas to ${ dir } every ${ interval } seconds`)
     const save = async () => {
         if (!canvasDirty) {
-            console.log('canvas not dirty, skipping save')
             return
         }
-        const filename = path.join(dir, `canvas-${ new Date().toISOString() }.png`)
+        const filename = path.join(dir, `canvas-${ new Date().toISOString() }.jpeg`)
         console.log(`saving canvas to ${ filename }`)
-        canvas.pngStream().pipe(fs.createWriteStream(filename))
+        await saveCanvas()
+        fs.createReadStream('canvas.jpeg').pipe(fs.createWriteStream(filename));
         canvasDirty = false
     }
     setInterval(save, interval * 1000)
@@ -69,16 +82,31 @@ server.implement('paint', async (event: PaintEvent, sender) => {
 })
 
 server.implement('getCanvas', async (request: CanvasRequest) => {
-    if (request.width > shared.canvasWidth || request.height > shared.canvasHeight) {
-        throw new Error('Too large')
+    let {offset, width, height} = request
+    if (offset.x < 0 || offset.y < 0 ||
+        offset.x + width > shared.canvasWidth ||
+        offset.y + height > shared.canvasHeight) {
+        throw new Error('Out of bounds')
     }
-    const imageData = ctx.getImageData(0, 0, request.width, request.height)
-    return new Promise((resolve, reject) => {
-        const buffer = Buffer.from(imageData.data.buffer)
-        zlib.gzip(buffer, (error, image) => {
-            if (error) { reject(error) } else { resolve({image}) }
-        })
-    })
+    const imageData = ctx.getImageData(offset.x, offset.y, width, height)
+    const imageBuffer = Buffer.from(imageData.data.buffer)
+    const image = sharp(imageBuffer, {raw: {width, height, channels: 4}})
+    let responseImage: Buffer
+    switch (request.encoding) {
+        case CanvasRequest.Encoding.JPEG:
+            responseImage = await image
+                .background('#ffffff').flatten().jpeg().toBuffer()
+            break
+        case CanvasRequest.Encoding.WEBP:
+            responseImage = await image.webp().toBuffer()
+            break
+        case CanvasRequest.Encoding.PNG:
+            responseImage = await image.png().toBuffer()
+            break
+        default:
+            throw new Error('Invalid encoding')
+    }
+    return {image: responseImage}
 })
 
 const broadcastStatus = () => {
