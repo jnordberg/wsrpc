@@ -187,7 +187,15 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
             }
         }
         (this.socket as any).binaryType = 'arraybuffer'
-        await Promise.race([waitForEvent(this, 'open'), waitForEvent(this, 'close')])
+        await new Promise((resolve) => {
+            const done = () => {
+                this.removeListener('open', done)
+                this.removeListener('close', done)
+                resolve()
+            }
+            this.on('open', done)
+            this.on('close', done)
+        })
     }
 
     /**
