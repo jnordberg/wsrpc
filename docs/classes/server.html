@@ -108,8 +108,9 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server.html#connectioncounter" class="tsd-kind-icon">connection<wbr>Counter</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#connections" class="tsd-kind-icon">connections</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#handlers" class="tsd-kind-icon">handlers</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#options" class="tsd-kind-icon">options</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server.html#pinginterval" class="tsd-kind-icon">ping<wbr>Interval</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server.html#server-1" class="tsd-kind-icon">server</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#server-1" class="tsd-kind-icon">server</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#service" class="tsd-kind-icon">service</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="server.html#defaultmaxlisteners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a></li>
 							</ul>
@@ -146,19 +147,34 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Server<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/iserveroptions.html" class="tsd-signature-type">IServerOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="server.html" class="tsd-signature-type">Server</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Server<span class="tsd-signature-symbol">(</span>service<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Service</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/iserveroptions.html" class="tsd-signature-type">IServerOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="server.html" class="tsd-signature-type">Server</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L92">server.ts:92</a></li>
+									<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L97">server.ts:97</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>options: <a href="../interfaces/iserveroptions.html" class="tsd-signature-type">IServerOptions</a></h5>
+									<h5>service: <span class="tsd-signature-type">Service</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>The protocol buffer service class to serve.</p>
+										</div>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/iserveroptions.html" class="tsd-signature-type">IServerOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>Options, see <a href="../interfaces/iserveroptions.html">IServerOptions</a>.</p>
+										</div>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="server.html" class="tsd-signature-type">Server</a></h4>
@@ -174,7 +190,7 @@
 					<div class="tsd-signature tsd-kind-icon">connection<wbr>Counter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L91">server.ts:91</a></li>
+							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L96">server.ts:96</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -184,7 +200,7 @@
 					<div class="tsd-signature tsd-kind-icon">connections<span class="tsd-signature-symbol">:</span> <a href="connection.html" class="tsd-signature-type">Connection</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L78">server.ts:78</a></li>
+							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L74">server.ts:74</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -199,7 +215,7 @@
 					<div class="tsd-signature tsd-kind-icon">handlers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L83">server.ts:83</a></li>
+							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L79">server.ts:79</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -216,25 +232,45 @@
 						</ul>
 					</div>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="options" class="tsd-anchor"></a>
+					<h3>options</h3>
+					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/iserveroptions.html" class="tsd-signature-type">IServerOptions</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L84">server.ts:84</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Server options, read-only.</p>
+						</div>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="pinginterval" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> ping<wbr>Interval</h3>
 					<div class="tsd-signature tsd-kind-icon">ping<wbr>Interval<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L92">server.ts:92</a></li>
+							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L97">server.ts:97</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="server-1" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> server</h3>
+					<h3>server</h3>
 					<div class="tsd-signature tsd-kind-icon">server<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Server</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L90">server.ts:90</a></li>
+							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L94">server.ts:94</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The underlying uWebSocket server, internal.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="service" class="tsd-anchor"></a>
@@ -242,7 +278,7 @@
 					<div class="tsd-signature tsd-kind-icon">service<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Service</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L88">server.ts:88</a></li>
+							<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L89">server.ts:89</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -303,7 +339,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L134">server.ts:134</a></li>
+									<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L145">server.ts:145</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -334,7 +370,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L144">server.ts:144</a></li>
+									<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L155">server.ts:155</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -356,7 +392,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L151">server.ts:151</a></li>
+									<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L162">server.ts:162</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -451,7 +487,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L117">server.ts:117</a></li>
+									<li>Defined in <a href="https://github.com/jnordberg/wsrpc/blob/master/src/server.ts#L128">server.ts:128</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -774,10 +810,13 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="server.html#handlers" class="tsd-kind-icon">handlers</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="server.html#options" class="tsd-kind-icon">options</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="server.html#pinginterval" class="tsd-kind-icon">ping<wbr>Interval</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="server.html#server-1" class="tsd-kind-icon">server</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
