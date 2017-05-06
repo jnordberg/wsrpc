@@ -4,6 +4,7 @@ PATH  := ./node_modules/.bin:$(PATH)
 
 PROTO_FILES := $(wildcard protocol/*.proto)
 PROTO_DEFS  := $(PROTO_FILES:.proto=.d.ts)
+SRC_FILES   := $(wildcard src/*.ts)
 
 .PHONY: lib
 lib: lib3 lib6
@@ -28,13 +29,13 @@ ci-test: node_modules $(PROTO_DEFS)
 lint: node_modules
 	tslint -p tsconfig.json -c tslint.json -t stylish --fix
 
-.PHONY: lib6
-lib6: $(PROTO_DEFS) node_modules
+lib6: $(PROTO_DEFS) $(SRC_FILES) node_modules
 	tsc -p tsconfig.json -t es6 --outDir lib6
+	touch lib6
 
-.PHONY: lib3
-lib3: $(PROTO_DEFS) node_modules
+lib3: $(PROTO_DEFS) $(SRC_FILES) node_modules
 	tsc -p tsconfig.json -t es3 --outDir lib3
+	touch lib3
 
 protocol/%.d.ts: protocol/%.js node_modules
 	pbts -o $@ $<
