@@ -18,9 +18,9 @@ const testAddr = `ws://localhost:${ testPort }`
 const testProtoPath = path.join(__dirname, './../protocol/test.proto')
 const testProto = protobuf.loadSync(testProtoPath)
 
+const serverService = testProto.lookupService('TestService')
 const serverOpts = {
     port: testPort,
-    service: testProto.lookupService('TestService'),
     pingInterval: 0.05,
 }
 
@@ -28,7 +28,7 @@ describe('rpc', () => {
 
     let planError = false
 
-    let server = new Server(serverOpts)
+    let server = new Server(serverService, serverOpts)
 
     server.implement('echo', async (request: TextMessage) => {
         if (request.text === 'throw-string') {
@@ -40,7 +40,7 @@ describe('rpc', () => {
         return {text: request.text}
     })
 
-    server.implement(testProto.lookupService('TestService').methods['Upper'], (request: TextMessage) => {
+    server.implement(serverService.methods['Upper'], (request: TextMessage) => {
         return new Promise((resolve, reject) => {
             const text = request.text.toUpperCase()
             setTimeout(() => {
@@ -250,7 +250,7 @@ describe('rpc', () => {
         // force a connection failure to simulate server being down for a bit
         await client.connect()
         planError = false
-        server = new Server(serverOpts)
+        server = new Server(serverService, serverOpts)
         await waitForEvent(client, 'open')
     })
 
@@ -280,7 +280,7 @@ describe('rpc browser client', function() {
     before(async function() {
         (<any>wsrpc_client).WS = WebSocket
         process.title = 'browser'
-        server = new Server(serverOpts)
+        server = new Server(serverService, serverOpts)
         server.implement('echo', async (request: TextMessage) => {
             return {text: request.text}
         })

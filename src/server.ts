@@ -52,10 +52,6 @@ export interface IServerOptions extends WebSocket.IServerOptions {
      * How often to send a ping frame, in seconds. Set to 0 to disable. Default = 10.
      */
     pingInterval?: number
-    /**
-     * The protobuf service to serve, required.
-     */
-    service: protobuf.Service
 }
 
 export interface IServerEvents {
@@ -83,16 +79,32 @@ export class Server extends EventEmitter implements IServerEvents {
     public readonly handlers: {[name: string]: Handler} = {}
 
     /**
+     * Server options, read-only.
+     */
+    public readonly options: IServerOptions
+
+    /**
      * The protobuf Service instance, internal.
      */
     public readonly service: protobuf.Service
 
-    private server: WebSocket.Server
+    /**
+     * The underlying uWebSocket server, internal.
+     */
+    public readonly server: WebSocket.Server
+
     private connectionCounter: number = 0
     private pingInterval: number
 
-    constructor(readonly options: IServerOptions) {
+    /**
+     * @param service The protocol buffer service class to serve.
+     * @param options Options, see {@link IServerOptions}.
+     */
+    constructor(service: protobuf.Service, options: IServerOptions = {}) {
         super()
+
+        this.service = service
+        this.options = options
 
         options.clientTracking = false
         if (options.perMessageDeflate === undefined) {
@@ -100,7 +112,6 @@ export class Server extends EventEmitter implements IServerEvents {
         }
 
         this.pingInterval = options.pingInterval || 10
-        this.service = options.service
 
         this.server = new WebSocket.Server(options)
         this.server.on('listening', () => { this.emit('listening') })
@@ -184,7 +195,11 @@ export class Connection extends EventEmitter {
      */
     public readonly id: number
 
-    private socket: WebSocket
+    /**
+     * The underlying WebSocket instance.
+     */
+    public readonly socket: WebSocket
+
     private server: Server
 
     constructor(socket: WebSocket, server: Server, id: number) {
