@@ -1,6 +1,6 @@
 {
   "name": "wsrpc",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "node.js/browser protobuf rpc over binary websockets",
   "author": "Johan Nordberg",
   "license": "BSD-3-Clause",
