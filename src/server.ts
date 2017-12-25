@@ -222,7 +222,7 @@ export class Connection extends EventEmitter {
                 event.payload = payload
             }
             const message = RPC.Message.encode({
-                type: RPC.Message.Type.EVENT, event,
+                event, type: RPC.Message.Type.EVENT,
             }).finish()
             this.socket.send(message, (error) => {
                 if (error) { reject(error) } else { resolve() }

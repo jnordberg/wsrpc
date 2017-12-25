@@ -241,8 +241,8 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
         const message: RPC.IMessage = {
             request: {
                 method: method.name,
-                seq,
                 payload: requestData,
+                seq,
             },
             type: RPC.Message.Type.REQUEST,
         }
