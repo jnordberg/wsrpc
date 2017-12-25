@@ -67,6 +67,7 @@ describe('rpc', () => {
             console.warn('unplanned client error', error.message)
         }
     })
+    after(async () => await client.disconnect())
 
     it('should throw when implementing invalid method', function() {
         assert.throws(() => {
@@ -285,6 +286,11 @@ describe('rpc browser client', function() {
             return {text: request.text}
         })
         client = new Client(testAddr, TestService)
+    })
+
+    after(async function() {
+        await client.disconnect()
+        server.close()
     })
 
     it('should work', async function() {
