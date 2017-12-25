@@ -265,7 +265,7 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
         }
     }
 
-    private rpcCallback = (seq: number, error: Error|null, response?: Uint8Array) => {
+    private rpcCallback = (seq: number, error: Error|null, response?: (Uint8Array|null)) => {
         if (!this.messageBuffer[seq]) {
             this.errorHandler(new VError({cause: error}, `Got response for unknown seqNo: ${ seq }`))
             return
