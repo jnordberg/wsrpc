@@ -63,13 +63,15 @@ function retrieve(key: string): any {
 const now = window.performance ? () => window.performance.now() : () => Date.now()
 const day = () => Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 2))
 
-const client = new Client('ws://192.168.1.33:4242', Painter, {
+const client = new Client('ws://localhost:4242', Painter as any, {
     sendTimeout: 5 * 60 * 1000,
     eventTypes: {
         paint: PaintEvent,
         status: StatusEvent,
     }
 })
+
+const service = client.service as Painter
 
 client.on('open', () => {
     document.documentElement.classList.add('connected')
@@ -287,7 +289,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             height: Math.min(window.innerHeight * pixelRatio, shared.canvasHeight - offset.y),
         }
         console.log('loading canvas...', request)
-        const response = await client.service.getCanvas(request)
+        const response = await service.getCanvas(request)
 
         console.log(`response size: ${ ~~(response.image.length / 1024) }kb`)
 
@@ -387,7 +389,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         let drawCalls = []
         for (const msg of msgs) {
             offsetPaint(msg)
-            drawCalls.push(client.service.paint(msg))
+            drawCalls.push(service.paint(msg))
         }
         await Promise.all(drawCalls)
     }

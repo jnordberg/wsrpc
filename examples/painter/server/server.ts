@@ -63,9 +63,8 @@ if (process.env['SAVE_INTERVAL'] && process.env['SAVE_DIR']) {
     setInterval(save, interval * 1000)
 }
 
-const server = new wsrpc.Server({
+const server = new wsrpc.Server(proto.lookupService('Painter') as any, {
     port: 4242,
-    service: proto.lookupService('Painter')
 })
 
 server.implement('paint', async (event: PaintEvent, sender) => {
