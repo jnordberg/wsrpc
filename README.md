@@ -34,10 +34,7 @@ const protobuf = require('protobufjs')
 
 const proto = protobuf.loadSync('my-service.proto')
 
-const server = new wsrpc.Server({
-    port: 4242,
-    service: proto.lookupService('MyService')
-})
+const server = new wsrpc.Server(proto.lookupService('MyService'), { port: 4242 })
 
 server.implement('sayHello', async (request) => {
     return {text: `Hello ${ request.name }!`}
