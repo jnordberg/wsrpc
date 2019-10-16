@@ -1,7 +1,11 @@
-syntax = "proto3";
+syntax = "proto2";
 
 message Message {
-    enum Type { REQUEST = 1; RESPONSE = 2; EVENT = 3; }
+    enum Type {
+        REQUEST = 1;
+        RESPONSE = 2;
+        EVENT = 3;
+    }
     required Type type = 1;
     optional Request request = 2;
     optional Response response = 3;
