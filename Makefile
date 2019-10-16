@@ -45,7 +45,7 @@ protocol/%.js: protocol/%.proto node_modules
 	pbjs -r $(basename $(notdir $<)) -t static-module -w commonjs -o $@ $<
 
 node_modules:
-	npm install
+	yarn
 
 .PHONY: docs
 docs: node_modules
