@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "protobufjs": "^6.8.3",
-    "uws": "^10.148.1",
+    "uws": "10.148.1",
     "verror": "^1.10.0"
   },
   "devDependencies": {
