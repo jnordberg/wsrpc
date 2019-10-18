@@ -33,13 +33,21 @@
  * in the design, construction, operation or maintenance of any military facility.
  */
 
-import {EventEmitter} from 'events'
+import { EventEmitter } from 'events'
 
 /**
  * Return a promise that will resove when a specific event is emitted.
  */
-export function waitForEvent<T>(emitter: EventEmitter, eventName: string|symbol): Promise<T> {
+export function waitForEvent<T>(emitter: EventEmitter, eventName: string | symbol): Promise<T> {
     return new Promise((resolve, reject) => {
         emitter.once(eventName, resolve)
     })
+}
+
+/**
+ * Default backoff function.
+ * ```min(tries*10^2, 10 seconds)```
+ */
+export function defaultBackoff(tries: number): number {
+    return Math.min(Math.pow(tries * 10, 2), 10 * 1000)
 }

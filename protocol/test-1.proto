@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+package test1;
+
+message Empty {}
+
+service TestService1 {
+    rpc Echo (TextMessage) returns (TextMessage) {}
+    rpc Upper (TextMessage) returns (TextMessage) {}
+    rpc NotImplemented (EmptyMessage) returns (EmptyMessage) {}
+}
+
+message EmptyMessage {}
+
+message TextMessage {
+    required string text = 1;
+}
+
+message EventRequest {
+    required string name = 1;
+    required uint32 delay = 2;
+}
+

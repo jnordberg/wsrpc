@@ -13,9 +13,10 @@ message Message {
 }
 
 message Request {
-    required string method = 1;
-    required uint32 seq = 2;
-    optional bytes payload = 3;
+    optional string service = 1;
+    required string method = 2;
+    required uint32 seq = 3;
+    optional bytes payload = 4;
 }
 
 message Response {

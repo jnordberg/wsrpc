@@ -7,7 +7,7 @@
   "main": "./lib6/index",
   "typings": "./lib6/index",
   "browser": {
-    "./lib6/index": "./lib3/client.js",
+    "./lib6/index": "./lib3/Client.js",
     "uws": "./ws-browser.js"
   },
   "files": [
