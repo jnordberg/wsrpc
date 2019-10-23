@@ -1,6 +1,6 @@
 
-SHELL := /bin/bash
-PATH  := ./node_modules/.bin:$(PATH)
+PATH  := $(PATH):$(PWD)/node_modules/.bin
+SHELL := env PATH=$(PATH) /bin/bash
 
 PROTO_FILES := $(wildcard protocol/*.proto)
 PROTO_DEFS  := $(PROTO_FILES:.proto=.d.ts)

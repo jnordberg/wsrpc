@@ -35,8 +35,8 @@
 
 import {EventEmitter} from 'events'
 import * as protobuf from 'protobufjs/minimal'
-import * as WebSocket from 'uws'
 import {VError} from 'verror'
+import * as WebSocket from 'ws'
 import * as RPC from './../protocol/rpc'
 import {waitForEvent} from './utils'
 
@@ -47,7 +47,7 @@ import {waitForEvent} from './utils'
  * Note that `WebSocket.IServerOptions.perMessageDeflate` defaults
  * to `false` if omitted.
  */
-export interface IServerOptions extends WebSocket.IServerOptions {
+export interface IServerOptions extends WebSocket.ServerOptions {
     /**
      * How often to send a ping frame, in seconds. Set to 0 to disable. Default = 10.
      */
@@ -144,7 +144,7 @@ export class Server extends EventEmitter implements IServerEvents {
      */
     public async broadcast(name: string, payload?: Uint8Array) {
         const promises = this.connections.map((connection) => {
-            connection.send(name, payload)
+            return connection.send(name, payload)
         })
         await Promise.all(promises)
     }
@@ -289,7 +289,11 @@ export class Connection extends EventEmitter {
         }
         this.requestHandler(request).then((response) => {
             const message = RPC.Message.encode({type: RPC.Message.Type.RESPONSE, response}).finish()
-            this.socket.send(message)
+            return new Promise<void>((resolve, reject) => {
+                this.socket.send(message, (error) => {
+                    if (error) { reject(error) } else { resolve ()}
+                })
+            })
         }).catch((error: Error) => {
             const message = RPC.Message.encode({
                 response: {
@@ -299,7 +303,9 @@ export class Connection extends EventEmitter {
                 },
                 type: RPC.Message.Type.RESPONSE,
             }).finish()
-            this.socket.send(message)
+            if (this.socket.readyState === WebSocket.OPEN) {
+                this.socket.send(message)
+            }
             setImmediate(() => {
                 // this avoids the promise swallowing the error thrown
                 // by emit 'error' when no listeners are present

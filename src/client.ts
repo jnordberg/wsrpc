@@ -35,8 +35,8 @@
 
 import {EventEmitter} from 'events'
 import * as protobuf from 'protobufjs/minimal'
-import * as WebSocket from 'uws'
 import {VError} from 'verror'
+import * as WebSocket from 'ws'
 import * as RPC from '../protocol/rpc'
 import {waitForEvent} from './utils'
 
@@ -60,7 +60,7 @@ interface IRPCMessage {
  * *Note* - The options inherited from `WebSocket.IClientOptions` are only
  * valid when running in node.js, they have no effect in the browser.
  */
-export interface IClientOptions extends WebSocket.IClientOptions {
+export interface IClientOptions extends WebSocket.ClientOptions {
     /**
      * Event names to protobuf types, any event assigned a type will have
      * its payload decoded before the event is posted.
@@ -224,7 +224,7 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
         }
     }
 
-    private errorHandler = (error: Error) => {
+    private errorHandler = (error: any) => {
         this.emit('error', error)
     }
 
