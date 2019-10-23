@@ -64,7 +64,9 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<h1 id="wsrpc-build-status-coverage-status-package-version-license"><a href="https://github.com/jnordberg/wsrpc">wsrpc</a> <a href="https://travis-ci.org/jnordberg/wsrpc"><img src="https://img.shields.io/travis/jnordberg/wsrpc.svg?style=flat-square" alt="Build Status"></a> <a href="https://coveralls.io/github/jnordberg/wsrpc?branch=master"><img src="https://img.shields.io/coveralls/jnordberg/wsrpc.svg?style=flat-square" alt="Coverage Status"></a> <a href="https://www.npmjs.com/package/wsrpc"><img src="https://img.shields.io/npm/v/wsrpc.svg?style=flat-square" alt="Package Version"></a> <img src="https://img.shields.io/npm/l/wsrpc.svg?style=flat-square" alt="License"></h1>
+				<a href="#a-hrefhttpsgithubcomjnordbergwsrpcwsrpca-a-hrefhttpstravis-ciorgjnordbergwsrpcimg-srchttpsimgshieldsiotravisjnordbergwsrpcsvgstyleflat-square-altbuild-statusa-a-hrefhttpscoverallsiogithubjnordbergwsrpcbranchmasterimg-srchttpsimgshieldsiocoverallsjnordbergwsrpcsvgstyleflat-square-altcoverage-statusa-a-hrefhttpswwwnpmjscompackagewsrpcimg-srchttpsimgshieldsionpmvwsrpcsvgstyleflat-square-altpackage-versiona-img-srchttpsimgshieldsionpmlwsrpcsvgstyleflat-square-altlicense" id="a-hrefhttpsgithubcomjnordbergwsrpcwsrpca-a-hrefhttpstravis-ciorgjnordbergwsrpcimg-srchttpsimgshieldsiotravisjnordbergwsrpcsvgstyleflat-square-altbuild-statusa-a-hrefhttpscoverallsiogithubjnordbergwsrpcbranchmasterimg-srchttpsimgshieldsiocoverallsjnordbergwsrpcsvgstyleflat-square-altcoverage-statusa-a-hrefhttpswwwnpmjscompackagewsrpcimg-srchttpsimgshieldsionpmvwsrpcsvgstyleflat-square-altpackage-versiona-img-srchttpsimgshieldsionpmlwsrpcsvgstyleflat-square-altlicense" style="color: inherit; text-decoration: none;">
+					<h1><a href="https://github.com/jnordberg/wsrpc">wsrpc</a> <a href="https://travis-ci.org/jnordberg/wsrpc"><img src="https://img.shields.io/travis/jnordberg/wsrpc.svg?style=flat-square" alt="Build Status"></a> <a href="https://coveralls.io/github/jnordberg/wsrpc?branch=master"><img src="https://img.shields.io/coveralls/jnordberg/wsrpc.svg?style=flat-square" alt="Coverage Status"></a> <a href="https://www.npmjs.com/package/wsrpc"><img src="https://img.shields.io/npm/v/wsrpc.svg?style=flat-square" alt="Package Version"></a> <img src="https://img.shields.io/npm/l/wsrpc.svg?style=flat-square" alt="License"></h1>
+				</a>
 				<p>node.js/browser protobuf rpc over binary websockets.</p>
 				<ul>
 					<li><strong><a href="https://johan-nordberg.com/wspainter">Demo</a></strong> (<a href="https://github.com/jnordberg/wsrpc/tree/master/examples/painter">source</a>)</li>
@@ -72,9 +74,11 @@
 					<li><a href="https://github.com/jnordberg/wsrpc/issues">Issues</a></li>
 				</ul>
 				<hr>
-				<h2 id="minimal-example">Minimal example</h2>
+				<a href="#minimal-example" id="minimal-example" style="color: inherit; text-decoration: none;">
+					<h2>Minimal example</h2>
+				</a>
 				<p>my-service.proto</p>
-				<pre><code class="lang-protobuf"><span class="hljs-class"><span class="hljs-keyword">service</span> <span class="hljs-title">MyService</span> </span>{
+				<pre><code class="language-protobuf"><span class="hljs-class"><span class="hljs-keyword">service</span> <span class="hljs-title">MyService</span> </span>{
     <span class="hljs-function"><span class="hljs-keyword">rpc</span> SayHello (HelloRequest) <span class="hljs-keyword">returns</span> (HelloResponse) {}
 }
 
@@ -84,25 +88,20 @@ message HelloRequest {
 
 <span class="hljs-class"><span class="hljs-keyword">message</span> <span class="hljs-title">HelloResponse</span> </span>{
     <span class="hljs-keyword">required</span> <span class="hljs-built_in">string</span> text = <span class="hljs-number">1</span>;
-}
-</code></pre>
+}</code></pre>
 				<p>server.js</p>
-				<pre><code class="lang-typescript"><span class="hljs-keyword">const</span> wsrpc = <span class="hljs-built_in">require</span>(<span class="hljs-string">'wsrpc'</span>)
+				<pre><code class="language-typescript"><span class="hljs-keyword">const</span> wsrpc = <span class="hljs-built_in">require</span>(<span class="hljs-string">'wsrpc'</span>)
 <span class="hljs-keyword">const</span> protobuf = <span class="hljs-built_in">require</span>(<span class="hljs-string">'protobufjs'</span>)
 
 <span class="hljs-keyword">const</span> proto = protobuf.loadSync(<span class="hljs-string">'my-service.proto'</span>)
 
-<span class="hljs-keyword">const</span> server = <span class="hljs-keyword">new</span> wsrpc.Server({
-    port: <span class="hljs-number">4242</span>,
-    service: proto.lookupService(<span class="hljs-string">'MyService'</span>)
-})
+<span class="hljs-keyword">const</span> server = <span class="hljs-keyword">new</span> wsrpc.Server(proto.lookupService(<span class="hljs-string">'MyService'</span>), { port: <span class="hljs-number">4242</span> })
 
 server.implement(<span class="hljs-string">'sayHello'</span>, <span class="hljs-keyword">async</span> (request) =&gt; {
     <span class="hljs-keyword">return</span> {text: <span class="hljs-string">`Hello <span class="hljs-subst">${ request.name }</span>!`</span>}
-})
-</code></pre>
+})</code></pre>
 				<p>client.js</p>
-				<pre><code class="lang-typescript"><span class="hljs-keyword">const</span> wsrpc = <span class="hljs-built_in">require</span>(<span class="hljs-string">'wsrpc'</span>)
+				<pre><code class="language-typescript"><span class="hljs-keyword">const</span> wsrpc = <span class="hljs-built_in">require</span>(<span class="hljs-string">'wsrpc'</span>)
 <span class="hljs-keyword">const</span> protobuf = <span class="hljs-built_in">require</span>(<span class="hljs-string">'protobufjs'</span>)
 
 <span class="hljs-keyword">const</span> proto = protobuf.loadSync(<span class="hljs-string">'my-service.proto'</span>)
@@ -110,8 +109,7 @@ server.implement(<span class="hljs-string">'sayHello'</span>, <span class="hljs-
 <span class="hljs-keyword">const</span> client = <span class="hljs-keyword">new</span> wsrpc.Client(<span class="hljs-string">'ws://localhost:4242'</span>, proto.lookupService(<span class="hljs-string">'MyService'</span>))
 
 <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> client.service.sayHello({name: <span class="hljs-string">'world'</span>})
-<span class="hljs-built_in">console</span>.log(response) <span class="hljs-comment">// Hello world!</span>
-</code></pre>
+<span class="hljs-built_in">console</span>.log(response) <span class="hljs-comment">// Hello world!</span></code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -186,6 +184,7 @@ server.implement(<span class="hljs-string">'sayHello'</span>, <span class="hljs-
 				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
@@ -234,7 +233,7 @@ server.implement(<span class="hljs-string">'sayHello'</span>, <span class="hljs-
 	</div>
 </footer>
 <div class="container tsd-generator">
-	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
 <script src="assets/js/main.js"></script>

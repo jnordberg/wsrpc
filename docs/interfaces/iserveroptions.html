@@ -69,7 +69,9 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<h2 id="rpc-server-options">RPC Server options</h2>
+						<a href="#rpc-server-options" id="rpc-server-options" style="color: inherit; text-decoration: none;">
+							<h2>RPC Server options</h2>
+						</a>
 						<p>Server options, extends the WebSocket server options.
 							Note that <code>WebSocket.IServerOptions.perMessageDeflate</code> defaults
 						to <code>false</code> if omitted.</p>
@@ -80,7 +82,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">IServerOptions</span>
+						<span class="tsd-signature-type">ServerOptions</span>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">IServerOptions</span>
@@ -96,10 +98,11 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="iserveroptions.html#backlog" class="tsd-kind-icon">backlog</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="iserveroptions.html#clienttracking" class="tsd-kind-icon">client<wbr>Tracking</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="iserveroptions.html#disablehixie" class="tsd-kind-icon">disable<wbr>Hixie</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="iserveroptions.html#handleprotocols" class="tsd-kind-icon">handle<wbr>Protocols</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="iserveroptions.html#host" class="tsd-kind-icon">host</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="iserveroptions.html#maxpayload" class="tsd-kind-icon">max<wbr>Payload</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="iserveroptions.html#noserver" class="tsd-kind-icon">no<wbr>Server</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="iserveroptions.html#path" class="tsd-kind-icon">path</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="iserveroptions.html#permessagedeflate" class="tsd-kind-icon">per<wbr>Message<wbr>Deflate</a></li>
@@ -115,24 +118,24 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="clienttracking" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> client<wbr>Tracking</h3>
-					<div class="tsd-signature tsd-kind-icon">client<wbr>Tracking<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span></div>
+					<a name="backlog" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> backlog</h3>
+					<div class="tsd-signature tsd-kind-icon">backlog<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from IServerOptions.clientTracking</p>
+						<p>Inherited from ServerOptions.backlog</p>
 						<ul>
-							<li>Defined in ./node_modules/@types/uws/index.d.ts:127</li>
+							<li>Defined in ./node_modules/@types/ws/index.d.ts:197</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="disablehixie" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> disable<wbr>Hixie</h3>
-					<div class="tsd-signature tsd-kind-icon">disable<wbr>Hixie<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span></div>
+					<a name="clienttracking" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> client<wbr>Tracking</h3>
+					<div class="tsd-signature tsd-kind-icon">client<wbr>Tracking<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from IServerOptions.disableHixie</p>
+						<p>Inherited from ServerOptions.clientTracking</p>
 						<ul>
-							<li>Defined in ./node_modules/@types/uws/index.d.ts:126</li>
+							<li>Defined in ./node_modules/@types/ws/index.d.ts:203</li>
 						</ul>
 					</aside>
 				</section>
@@ -141,9 +144,9 @@
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> handle<wbr>Protocols</h3>
 					<div class="tsd-signature tsd-kind-icon">handle<wbr>Protocols<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from IServerOptions.handleProtocols</p>
+						<p>Inherited from ServerOptions.handleProtocols</p>
 						<ul>
-							<li>Defined in ./node_modules/@types/uws/index.d.ts:123</li>
+							<li>Defined in ./node_modules/@types/ws/index.d.ts:200</li>
 						</ul>
 					</aside>
 				</section>
@@ -152,20 +155,31 @@
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> host</h3>
 					<div class="tsd-signature tsd-kind-icon">host<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from IServerOptions.host</p>
+						<p>Inherited from ServerOptions.host</p>
 						<ul>
-							<li>Defined in ./node_modules/@types/uws/index.d.ts:119</li>
+							<li>Defined in ./node_modules/@types/ws/index.d.ts:195</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="maxpayload" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Payload</h3>
+					<div class="tsd-signature tsd-kind-icon">max<wbr>Payload<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from ServerOptions.maxPayload</p>
+						<ul>
+							<li>Defined in ./node_modules/@types/ws/index.d.ts:205</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="noserver" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> no<wbr>Server</h3>
-					<div class="tsd-signature tsd-kind-icon">no<wbr>Server<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span></div>
+					<div class="tsd-signature tsd-kind-icon">no<wbr>Server<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from IServerOptions.noServer</p>
+						<p>Inherited from ServerOptions.noServer</p>
 						<ul>
-							<li>Defined in ./node_modules/@types/uws/index.d.ts:125</li>
+							<li>Defined in ./node_modules/@types/ws/index.d.ts:202</li>
 						</ul>
 					</aside>
 				</section>
@@ -174,20 +188,20 @@
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> path</h3>
 					<div class="tsd-signature tsd-kind-icon">path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from IServerOptions.path</p>
+						<p>Inherited from ServerOptions.path</p>
 						<ul>
-							<li>Defined in ./node_modules/@types/uws/index.d.ts:124</li>
+							<li>Defined in ./node_modules/@types/ws/index.d.ts:201</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="permessagedeflate" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> per<wbr>Message<wbr>Deflate</h3>
-					<div class="tsd-signature tsd-kind-icon">per<wbr>Message<wbr>Deflate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">IPerMessageDeflateOptions</span></div>
+					<div class="tsd-signature tsd-kind-icon">per<wbr>Message<wbr>Deflate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PerMessageDeflateOptions</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from IServerOptions.perMessageDeflate</p>
+						<p>Inherited from ServerOptions.perMessageDeflate</p>
 						<ul>
-							<li>Defined in ./node_modules/@types/uws/index.d.ts:128</li>
+							<li>Defined in ./node_modules/@types/ws/index.d.ts:204</li>
 						</ul>
 					</aside>
 				</section>
@@ -211,9 +225,9 @@
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> port</h3>
 					<div class="tsd-signature tsd-kind-icon">port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from IServerOptions.port</p>
+						<p>Inherited from ServerOptions.port</p>
 						<ul>
-							<li>Defined in ./node_modules/@types/uws/index.d.ts:120</li>
+							<li>Defined in ./node_modules/@types/ws/index.d.ts:196</li>
 						</ul>
 					</aside>
 				</section>
@@ -222,9 +236,9 @@
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> server</h3>
 					<div class="tsd-signature tsd-kind-icon">server<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Server</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Server</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from IServerOptions.server</p>
+						<p>Inherited from ServerOptions.server</p>
 						<ul>
-							<li>Defined in ./node_modules/@types/uws/index.d.ts:121</li>
+							<li>Defined in ./node_modules/@types/ws/index.d.ts:198</li>
 						</ul>
 					</aside>
 				</section>
@@ -233,9 +247,9 @@
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> verify<wbr>Client</h3>
 					<div class="tsd-signature tsd-kind-icon">verify<wbr>Client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">VerifyClientCallbackAsync</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">VerifyClientCallbackSync</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from IServerOptions.verifyClient</p>
+						<p>Inherited from ServerOptions.verifyClient</p>
 						<ul>
-							<li>Defined in ./node_modules/@types/uws/index.d.ts:122</li>
+							<li>Defined in ./node_modules/@types/ws/index.d.ts:199</li>
 						</ul>
 					</aside>
 				</section>
@@ -281,16 +295,19 @@
 						<a href="iserveroptions.html" class="tsd-kind-icon">IServer<wbr>Options</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="iserveroptions.html#clienttracking" class="tsd-kind-icon">client<wbr>Tracking</a>
+								<a href="iserveroptions.html#backlog" class="tsd-kind-icon">backlog</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="iserveroptions.html#disablehixie" class="tsd-kind-icon">disable<wbr>Hixie</a>
+								<a href="iserveroptions.html#clienttracking" class="tsd-kind-icon">client<wbr>Tracking</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="iserveroptions.html#handleprotocols" class="tsd-kind-icon">handle<wbr>Protocols</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="iserveroptions.html#host" class="tsd-kind-icon">host</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="iserveroptions.html#maxpayload" class="tsd-kind-icon">max<wbr>Payload</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="iserveroptions.html#noserver" class="tsd-kind-icon">no<wbr>Server</a>
@@ -352,6 +369,7 @@
 				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
@@ -400,7 +418,7 @@
 	</div>
 </footer>
 <div class="container tsd-generator">
-	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
