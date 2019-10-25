@@ -210,7 +210,6 @@ describe('rpc', () => {
     })
 
     it('should timeout messages', async function() {
-        planError = false
         this.slow(300)
         const response = client.service.echo({text: 'foo'})
         await client.disconnect()
@@ -223,6 +222,7 @@ describe('rpc', () => {
     })
 
     it('should reconnect', async function() {
+        planError = false
         await client.connect()
         const response = await client.service.echo({text: 'baz'})
         assert(response.text, 'baz')
