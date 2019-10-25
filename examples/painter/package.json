@@ -5,19 +5,19 @@
     "canvas": "./client/canvas.js"
   },
   "dependencies": {
-    "@types/lru-cache": "^4.0.0",
-    "@types/sharp": "^0.17.1",
-    "canvas": "^1.6.11",
-    "lru-cache": "^4.0.2",
-    "protobufjs": "6.8.6",
-    "sharp": "^0.20.5",
-    "ts-node": "^7.0.0",
+    "@types/lru-cache": "^5.1.0",
+    "@types/sharp": "^0.23.0",
+    "canvas": "^2.6.0",
+    "lru-cache": "^5.1.1",
+    "protobufjs": "^6.8.8",
+    "sharp": "^0.23.1",
+    "ts-node": "^8.4.1",
     "tsify": "^4.0.0",
-    "typescript": "^2.9.2",
-    "wintersmith": "^2.3.6",
-    "wintersmith-browserify": "^1.2.1",
+    "typescript": "^3.6.4",
+    "wintersmith": "^2.5.0",
+    "wintersmith-browserify": "^1.3.0",
     "wintersmith-livereload": "^1.0.0",
     "wintersmith-nunjucks": "^2.0.0",
-    "wsrpc": "^1.3.0"
+    "wsrpc": "^1.4.1"
   }
 }

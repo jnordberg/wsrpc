@@ -6,7 +6,7 @@ export const canvasWidth = process.env['CANVAS_WIDTH'] ? parseInt(process.env['C
 export const canvasHeight = process.env['CANVAS_HEIGHT'] ? parseInt(process.env['CANVAS_HEIGHT']) :4096
 export const brushSize = 124
 
-const brushCache = LRUCache<number, HTMLCanvasElement>({max: 20})
+const brushCache = new LRUCache<number, HTMLCanvasElement>({max: 20})
 const brushImage = new Canvas.Image()
 brushImage.src = require('./brush')
 
@@ -19,7 +19,7 @@ function createCanvas(width: number, height: number):HTMLCanvasElement {
         rv.height = height
         return rv
     } else {
-        return new Canvas(width, height)
+        return new Canvas.createCanvas(width, height)
     }
 }
 

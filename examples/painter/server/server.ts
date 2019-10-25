@@ -11,7 +11,7 @@ import * as shared from './../shared/paint'
 
 const proto = protobuf.loadSync(`${ __dirname }/../protocol/service.proto`)
 
-const canvas = new Canvas(shared.canvasWidth, shared.canvasHeight)
+const canvas = Canvas.createCanvas(shared.canvasWidth, shared.canvasHeight)
 const ctx = canvas.getContext('2d')
 ctx.patternQuality = 'fast'
 ctx.filter = 'fast'
@@ -33,7 +33,7 @@ async function saveCanvas() {
     const imageData = ctx.getImageData(0, 0, width, height)
     const imageBuffer = Buffer.from(imageData.data.buffer)
     await sharp(imageBuffer, {raw: {channels: 4, width, height}})
-        .background('#ffffff').flatten()
+        .flatten({ background: '#ffffff'})
         .jpeg({quality: 90, chromaSubsampling: '4:4:4'})
         .toFile('canvas.jpeg')
 }
@@ -94,7 +94,7 @@ server.implement('getCanvas', async (request: CanvasRequest) => {
     switch (request.encoding) {
         case CanvasRequest.Encoding.JPEG:
             responseImage = await image
-                .background('#ffffff').flatten().jpeg().toBuffer()
+                .flatten({ background: '#ffffff' }).jpeg().toBuffer()
             break
         case CanvasRequest.Encoding.WEBP:
             responseImage = await image.webp().toBuffer()
