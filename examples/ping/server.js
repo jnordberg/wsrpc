@@ -4,11 +4,9 @@ const wsrpc = require('wsrpc')
 const protobuf = require('protobufjs')
 
 const proto = protobuf.loadSync('service.proto')
+const service = proto.lookupService('PingService')
 
-const server = new wsrpc.Server({
-    port: 4242,
-    service: proto.lookupService('PingService'),
-})
+const server = new wsrpc.Server(service, {port: 4242})
 
 server.implement('ping', async (request) => {
     return {nonce: request.nonce, time: Date.now()}
