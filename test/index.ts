@@ -27,6 +27,7 @@ const serverOpts = {
 describe('rpc', () => {
 
     let planError = false
+    let unplannedError = false
 
     let server = new Server(serverService, serverOpts)
 
@@ -50,9 +51,12 @@ describe('rpc', () => {
     })
 
     server.on('error', (error: Error) => {
-        if (!planError) {
-            console.warn('unplanned server error', error.message)
+        if (planError) {
+            return
         }
+
+        unplannedError = true
+        console.warn('unplanned server error', error.message)
     })
 
     const client = new Client(testAddr, TestService, {
@@ -63,9 +67,12 @@ describe('rpc', () => {
     })
 
     client.on('error', (error: Error) => {
-        if (!planError) {
-            console.warn('unplanned client error', error.message)
+        if (planError) {
+            return
         }
+
+        unplannedError = true
+        console.warn('unplanned client error', error.message)
     })
     after(async () => await client.disconnect())
 
@@ -210,7 +217,6 @@ describe('rpc', () => {
     })
 
     it('should timeout messages', async function() {
-        planError = false
         this.slow(300)
         const response = client.service.echo({text: 'foo'})
         await client.disconnect()
@@ -223,6 +229,7 @@ describe('rpc', () => {
     })
 
     it('should reconnect', async function() {
+        planError = false
         await client.connect()
         const response = await client.service.echo({text: 'baz'})
         assert(response.text, 'baz')
@@ -270,6 +277,9 @@ describe('rpc', () => {
         await waitForEvent(client, 'close')
     })
 
+    it('should not have any unplanned error', async function() {
+        assert.equal(false, unplannedError)
+    })
 })
 
 describe('rpc browser client', function() {
