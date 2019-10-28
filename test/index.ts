@@ -8,7 +8,7 @@ import * as path from 'path'
 import * as crypto from 'crypto'
 import {Server, Client} from './../src'
 import * as wsrpc_client from './../src/client'
-import {waitForEvent, getFullName} from './../src/utils'
+import {waitForEvent, getFullName, lookupServices} from './../src/utils'
 import {TestService, TextMessage} from './../protocol/test'
 import * as rpcproto from './../protocol/rpc'
 import * as WebSocket from 'ws'
@@ -39,6 +39,11 @@ describe('utils', () => {
         assert.equal(getFullName(upperMethod), 'TestService.Upper')
         assert.equal(getFullName(otherUpperMethod), 'testNamespaceWithSameMethods.TestService.Upper')
     })
+
+    it('lookupServices works', function() {
+        const services = lookupServices(testProto)
+        assert.deepEqual(services, ['TestService', 'testNamespaceWithSameMethods.TestService'])
+    })
 })
 
 describe('rpc', () => {
@@ -46,9 +51,9 @@ describe('rpc', () => {
     let planError = false
     let unplannedError = false
 
-    let server = new Server(serverService, serverOpts)
+    let server = new Server(testProto, serverOpts)
 
-    server.implement('echo', async (request: TextMessage) => {
+    server.implement('Echo', async (request: TextMessage) => {
         if (request.text === 'throw-string') {
             throw 'You should always trow an error object'
         }
@@ -275,7 +280,7 @@ describe('rpc', () => {
         // force a connection failure to simulate server being down for a bit
         await client.connect()
         planError = false
-        server = new Server(serverService, serverOpts)
+        server = new Server(testProto, serverOpts)
         await waitForEvent(client, 'open')
     })
 
@@ -308,7 +313,7 @@ describe('rpc browser client', function() {
     before(async function() {
         (<any>wsrpc_client).WS = WebSocket
         process.title = 'browser'
-        server = new Server(serverService, serverOpts)
+        server = new Server(testProto, serverOpts)
         server.implement('echo', async (request: TextMessage) => {
             return {text: request.text}
         })

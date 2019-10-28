@@ -34,7 +34,7 @@
  */
 
 import {EventEmitter} from 'events'
-import {ReflectionObject} from 'protobufjs'
+import {ReflectionObject, Service, Namespace} from 'protobufjs'
 
 /**
  * Return a promise that will resove when a specific event is emitted.
@@ -63,4 +63,27 @@ export function getFullName(obj: ReflectionObject, names: string[] = []): string
     }
 
     return names.join('.')
+}
+
+/**
+ * Get all protobuf.Service in a protobuf.ReflectionObject.
+ * returns with an array of fully namespaced services.
+ *
+ * Example return:
+ * ['packageName.serviceName.methodName', 'differentPackageName.serviceName.methodName']
+ */
+export function lookupServices(obj: ReflectionObject): string[] {
+    const services: string[] = []
+
+    if (obj instanceof Service) {
+        services.push(getFullName(obj))
+    }
+
+    if (obj instanceof Namespace) {
+        obj.nestedArray.forEach((nestedObject: ReflectionObject) => {
+            services.push(...lookupServices(nestedObject))
+        })
+    }
+
+    return services
 }
