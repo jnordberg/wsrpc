@@ -45,6 +45,14 @@ export function waitForEvent<T>(emitter: EventEmitter, eventName: string|symbol)
     })
 }
 
+/**
+ * Resolve full name of protobuf objects.
+ * This helps to distinguish services or methods with the same name but in different packages/namespaces.
+ *
+ * Example returns:
+ * 'packageName.serviceName.methodName'
+ * 'differentPackageName.serviceName.methodName'
+ */
 export function getFullName(obj: ReflectionObject, names: string[] = []): string {
     if (obj.name) {
         names.unshift(obj.name)
