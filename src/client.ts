@@ -118,7 +118,7 @@ export class Client extends EventEmitter implements IClientEvents {
     /**
      * Protobuf rpc service instances.
      */
-    public readonly services: {[name: string]: protobuf.rpc.Service} = {}
+    public readonly services: {[name: string]: any} = {}
 
     public readonly root: protobuf.Root
 
@@ -148,7 +148,8 @@ export class Client extends EventEmitter implements IClientEvents {
         const services = lookupServices(this.root)
         services.forEach((serviceName) => {
             const service = this.root.lookupService(serviceName)
-            this.services[serviceName] = service.create(this.rpcImpl)
+            const rpcService: protobuf.rpc.Service = service.create(this.rpcImpl)
+            this.services[serviceName] = rpcService
         })
 
         this.eventTypes = options.eventTypes || {}
@@ -161,7 +162,7 @@ export class Client extends EventEmitter implements IClientEvents {
         }
     }
 
-    public service(serviceName: string): protobuf.rpc.Service {
+    public service<T extends protobuf.rpc.Service>(serviceName: string): T {
         return this.services[serviceName]
     }
 

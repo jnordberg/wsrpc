@@ -144,8 +144,7 @@ describe('rpc', () => {
         assert.equal(response.text, 'lower: hello world')
     })
 
-    it('should run without @ts-ignore if defined the type...', async function() {
-        // @ts-ignore
+    it('should run without @ts-ignore if the type is specified...', async function() {
         const service: testNamespaceWithSameMethods.TestService = client.service('testNamespaceWithSameMethods.TestService')
         const response = await service.lower({text: 'Hello World'})
         assert.equal(response.text, 'lower: hello world')
