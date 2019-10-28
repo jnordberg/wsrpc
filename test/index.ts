@@ -10,6 +10,7 @@ import {Server, Client} from './../src'
 import * as wsrpc_client from './../src/client'
 import {waitForEvent, getFullName, lookupServices} from './../src/utils'
 import {TestService, TextMessage} from './../protocol/test'
+import { testNamespaceWithSameMethods } from './../protocol/test-package'
 import * as rpcproto from './../protocol/rpc'
 import * as WebSocket from 'ws'
 
@@ -72,6 +73,14 @@ describe('rpc', () => {
         })
     })
 
+    server.implement(packagedTestService.methods['Upper'], async (request: TextMessage) => {
+        return { text: 'Upper: ' + request.text.toUpperCase() }
+    })
+
+    server.implement('testNamespaceWithSameMethods.TestService.lower', async (request: TextMessage) => {
+        return { text: 'lower: ' + request.text.toLowerCase() }
+    })
+
     server.on('error', (error: Error) => {
         if (planError) {
             return
@@ -81,7 +90,7 @@ describe('rpc', () => {
         console.warn('unplanned server error', error.message)
     })
 
-    const client = new Client(testAddr, TestService, {
+    const client = new Client(testAddr, testProto, {
         sendTimeout: 100,
         eventTypes: {
             'text': TextMessage
@@ -96,6 +105,7 @@ describe('rpc', () => {
         unplannedError = true
         console.warn('unplanned client error', error.message)
     })
+
     after(async () => await client.disconnect())
 
     it('should throw when implementing invalid method', function() {
@@ -109,20 +119,43 @@ describe('rpc', () => {
     })
 
     it('should run echo rpc method', async function() {
-        const response = await client.service.echo({text: 'hello world'})
+        // @ts-ignore
+        const response = await client.service('TestService').echo({text: 'hello world'})
         assert.equal(response.text, 'hello world')
     })
 
     it('should run upper rpc method', async function() {
         this.slow(150)
-        const response = await client.service.upper({text: 'hello world'})
+
+        // @ts-ignore
+        const response = await client.service('TestService').upper({text: 'hello world'})
         assert.equal(response.text, 'HELLO WORLD')
+    })
+
+    it('should run upper rpc method in namespaced service', async function() {
+        // @ts-ignore
+        const response = await client.service('testNamespaceWithSameMethods.TestService').upper({text: 'hello world'})
+        assert.equal(response.text, 'Upper: HELLO WORLD')
+    })
+
+    it('should run lower rpc method in namespaced service', async function() {
+        // @ts-ignore
+        const response = await client.service('testNamespaceWithSameMethods.TestService').lower({text: 'Hello World'})
+        assert.equal(response.text, 'lower: hello world')
+    })
+
+    it('should run without @ts-ignore if defined the type...', async function() {
+        // @ts-ignore
+        const service: testNamespaceWithSameMethods.TestService = client.service('testNamespaceWithSameMethods.TestService')
+        const response = await service.lower({text: 'Hello World'})
+        assert.equal(response.text, 'lower: hello world')
     })
 
     it('should handle thrown errors in implementation handler', async function() {
         planError = true
         try {
-            await client.service.echo({text: 'throw'})
+            // @ts-ignore
+            await client.service('TestService').echo({text: 'throw'})
             assert(false, 'should not be reached')
         } catch (error) {
             assert.equal(error.name, 'RPCError')
@@ -132,7 +165,8 @@ describe('rpc', () => {
 
     it('should handle thrown strings in implementation handler', async function() {
         try {
-            await client.service.echo({text: 'throw-string'})
+            // @ts-ignore
+            await client.service('TestService').echo({text: 'throw-string'})
             assert(false, 'should not be reached')
         } catch (error) {
             assert.equal(error.name, 'RPCError')
@@ -142,7 +176,8 @@ describe('rpc', () => {
 
     it('should handle unimplemented methods', async function() {
         try {
-            await client.service.notImplemented({})
+            // @ts-ignore
+            await client.service('TestService').notImplemented({})
             assert(false, 'should throw')
         } catch (error) {
             assert.equal(error.name, 'RPCError')
@@ -182,7 +217,6 @@ describe('rpc', () => {
             done()
         })
     })
-
 
     it('should handle garbled data from client', function(done) {
         planError = true
@@ -240,7 +274,8 @@ describe('rpc', () => {
 
     it('should timeout messages', async function() {
         this.slow(300)
-        const response = client.service.echo({text: 'foo'})
+        // @ts-ignore
+        const response = client.service('TestService').echo({text: 'foo'})
         await client.disconnect()
         try {
             await response
@@ -253,7 +288,8 @@ describe('rpc', () => {
     it('should reconnect', async function() {
         planError = false
         await client.connect()
-        const response = await client.service.echo({text: 'baz'})
+        // @ts-ignore
+        const response = await client.service('TestService').echo({text: 'baz'})
         assert(response.text, 'baz')
     })
 
@@ -266,8 +302,10 @@ describe('rpc', () => {
         server.connections[0].close()
         await waitForEvent(client, 'close')
 
-        const buzz = client.service.echo({text: 'fizz'})
-        const fizz = client.service.echo({text: 'buzz'})
+        // @ts-ignore
+        const buzz = client.service('TestService').echo({text: 'fizz'})
+        // @ts-ignore
+        const fizz = client.service('TestService').echo({text: 'buzz'})
         const response = await Promise.all([buzz, fizz])
         assert.deepEqual(response.map((msg) => msg.text), ['fizz', 'buzz'])
     })
@@ -287,7 +325,8 @@ describe('rpc', () => {
     it('should handle failed writes', async function() {
         (<any> client).socket.send = () => { throw new Error('boom') }
         try {
-            await client.service.echo({text: 'boom'})
+            // @ts-ignore
+            await client.service('TestService').echo({text: 'boom'})
             assert(false, 'should not be reached')
         } catch (error) {
             assert.equal(error.message, 'boom')
@@ -308,16 +347,16 @@ describe('rpc browser client', function() {
     // simulated browser test using the ws module
 
     let server: Server
-    let client: Client<TestService>
+    let client: Client
 
     before(async function() {
         (<any>wsrpc_client).WS = WebSocket
         process.title = 'browser'
         server = new Server(testProto, serverOpts)
-        server.implement('echo', async (request: TextMessage) => {
+        server.implement('TestService.Echo', async (request: TextMessage) => {
             return {text: request.text}
         })
-        client = new Client(testAddr, TestService)
+        client = new Client(testAddr, testProto)
     })
 
     after(async function() {
@@ -326,7 +365,8 @@ describe('rpc browser client', function() {
     })
 
     it('should work', async function() {
-        const response = await client.service.echo({text: 'foo'})
+        // @ts-ignore
+        const response = await client.service('TestService').echo({text: 'foo'})
         assert.equal(response.text, 'foo')
     })
 })

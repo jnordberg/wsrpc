@@ -38,7 +38,7 @@ import * as protobuf from 'protobufjs/minimal'
 import {VError} from 'verror'
 import * as WebSocket from 'ws'
 import * as RPC from '../protocol/rpc'
-import {waitForEvent} from './utils'
+import {getFullName, lookupServices, waitForEvent} from './utils'
 
 export let WS = WebSocket
 
@@ -108,7 +108,7 @@ export interface IClientEvents {
  * ----------
  * Can be used in both node.js and the browser. Also see {@link IClientOptions}.
  */
-export class Client<T extends protobuf.rpc.Service> extends EventEmitter implements IClientEvents {
+export class Client extends EventEmitter implements IClientEvents {
 
     /**
      * Client options, *readonly*.
@@ -116,9 +116,11 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
     public readonly options: IClientOptions
 
     /**
-     * The protobuf service instance which holds all the rpc methods defined in your protocol.
+     * Protobuf rpc service instances.
      */
-    public readonly service: T
+    public readonly services: {[name: string]: protobuf.rpc.Service} = {}
+
+    public readonly root: protobuf.Root
 
     private active: boolean = false
     private address: string
@@ -133,15 +135,21 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
 
     /**
      * @param address The address to the {@link Server}, eg `ws://example.com:8042`.
-     * @param service The protocol buffer service class to use, an instance of this
+     * @param root The protocol buffer service class to use, an instance of this
      *                will be available as {@link Client.service}.
      */
-    constructor(address: string, service: {create(rpcImpl: protobuf.RPCImpl): T}, options: IClientOptions = {}) {
+    constructor(address: string, root: protobuf.Root, options: IClientOptions = {}) {
         super()
 
         this.address = address
         this.options = options
-        this.service = service.create(this.rpcImpl)
+        this.root = root
+
+        const services = lookupServices(this.root)
+        services.forEach((serviceName) => {
+            const service = this.root.lookupService(serviceName)
+            this.services[serviceName] = service.create(this.rpcImpl)
+        })
 
         this.eventTypes = options.eventTypes || {}
         this.backoff = options.backoff || defaultBackoff
@@ -151,6 +159,10 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
         if (options.autoConnect === undefined || options.autoConnect === true) {
             this.connect()
         }
+    }
+
+    public service(serviceName: string): protobuf.rpc.Service {
+        return this.services[serviceName]
     }
 
     /**
@@ -234,13 +246,13 @@ export class Client<T extends protobuf.rpc.Service> extends EventEmitter impleme
         this.flushMessageBuffer().catch(this.errorHandler)
     }
 
-    private rpcImpl: protobuf.RPCImpl = (method, requestData, callback) => {
+    private rpcImpl: protobuf.RPCImpl = (method: any, requestData, callback) => {
         const seq = this.nextSeq
         this.nextSeq = (this.nextSeq + 1) & 0xffff
 
         const message: RPC.IMessage = {
             request: {
-                method: method.name,
+                method: getFullName(method),
                 payload: requestData,
                 seq,
             },
