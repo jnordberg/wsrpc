@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package testNamespaceWithSameMethods;
+
+service TestService {
+    rpc Upper (TextMessage) returns (TextMessage) {}
+    rpc lower (TextMessage) returns (TextMessage) {}
+}
+
+message TextMessage {
+    required string text = 1;
+}

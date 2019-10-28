@@ -38,7 +38,7 @@ import * as protobuf from 'protobufjs/minimal'
 import {VError} from 'verror'
 import * as WebSocket from 'ws'
 import * as RPC from './../protocol/rpc'
-import {waitForEvent} from './utils'
+import {getFullName} from './utils'
 
 /**
  * RPC Server options
@@ -84,9 +84,9 @@ export class Server extends EventEmitter implements IServerEvents {
     public readonly options: IServerOptions
 
     /**
-     * The protobuf Service instance, internal.
+     * The protobuf Root instance, internal.
      */
-    public readonly service: protobuf.Service
+    public readonly root: protobuf.Root
 
     /**
      * The underlying uWebSocket server, internal.
@@ -97,13 +97,13 @@ export class Server extends EventEmitter implements IServerEvents {
     private pingInterval: number
 
     /**
-     * @param service The protocol buffer service class to serve.
+     * @param root The protocol buffer root which contains the services to serve.
      * @param options Options, see {@link IServerOptions}.
      */
-    constructor(service: protobuf.Service, options: IServerOptions = {}) {
+    constructor(root: protobuf.Root, options: IServerOptions = {}) {
         super()
 
-        this.service = service
+        this.root = root
         this.options = options
 
         options.clientTracking = false
@@ -126,17 +126,19 @@ export class Server extends EventEmitter implements IServerEvents {
      * Implement a RPC method defined in the protobuf service.
      */
     public implement(method: protobuf.Method|string, handler: Handler) {
-        if (typeof method === 'string') {
-            const methodName = method[0].toUpperCase() + method.substring(1)
-            method = this.service.methods[methodName]
-            if (!method) {
-                throw new Error('Invalid method')
-            }
-        } else if (this.service.methodsArray.indexOf(method) === -1) {
+        if (typeof method !== 'string') {
+            method = getFullName(method)
+        }
+
+        const result: any = this.root.lookup(method)
+        if (!result || !(result instanceof protobuf.Method)) {
             throw new Error('Invalid method')
         }
+        method = result
+        const fullMethodName = getFullName(method)
+
         method.resolve()
-        this.handlers[method.name] = handler
+        this.handlers[fullMethodName] = handler
     }
 
     /**
@@ -238,14 +240,15 @@ export class Connection extends EventEmitter {
     }
 
     private async requestHandler(request: RPC.Request): Promise<RPC.Response> {
-        const methodName = request.method[0].toUpperCase() + request.method.substring(1)
+        const fullMethodName = request.method
 
-        const method = this.server.service.methods[methodName]
-        if (!method) {
+        const result = this.server.root.lookup(fullMethodName)
+        if (!result || !(result instanceof protobuf.Method)) {
             throw new Error('Invalid method')
         }
+        const method: protobuf.Method = result
 
-        const impl = this.server.handlers[methodName]
+        const impl = this.server.handlers[fullMethodName]
         if (!impl) {
             throw new Error('Not implemented')
         }
