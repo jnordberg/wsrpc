@@ -34,6 +34,7 @@
  */
 
 import {EventEmitter} from 'events'
+import {ReflectionObject} from 'protobufjs'
 
 /**
  * Return a promise that will resove when a specific event is emitted.
@@ -42,4 +43,16 @@ export function waitForEvent<T>(emitter: EventEmitter, eventName: string|symbol)
     return new Promise((resolve, reject) => {
         emitter.once(eventName, resolve)
     })
+}
+
+export function getFullName(obj: ReflectionObject, names: string[] = []): string {
+    if (obj.name) {
+        names.unshift(obj.name)
+    }
+
+    if (obj.parent) {
+        return getFullName(obj.parent, names)
+    }
+
+    return names.join('.')
 }
