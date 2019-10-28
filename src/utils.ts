@@ -72,18 +72,17 @@ export function getFullName(obj: ReflectionObject, names: string[] = []): string
  * Example return:
  * ['packageName.serviceName.methodName', 'differentPackageName.serviceName.methodName']
  */
-export function lookupServices(obj: ReflectionObject): string[] {
+export function lookupServices(obj: Namespace | Service): string[] {
     const services: string[] = []
 
     if (obj instanceof Service) {
         services.push(getFullName(obj))
+        return services
     }
 
-    if (obj instanceof Namespace) {
-        obj.nestedArray.forEach((nestedObject: ReflectionObject) => {
-            services.push(...lookupServices(nestedObject))
-        })
-    }
+    obj.nestedArray.forEach((nestedObject: Namespace) => {
+        services.push(...lookupServices(nestedObject))
+    })
 
     return services
 }
