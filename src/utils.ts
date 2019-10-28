@@ -34,7 +34,7 @@
  */
 
 import {EventEmitter} from 'events'
-import {ReflectionObject, Service, Namespace} from 'protobufjs'
+import {Namespace, ReflectionObject, Service} from 'protobufjs'
 
 /**
  * Return a promise that will resove when a specific event is emitted.
