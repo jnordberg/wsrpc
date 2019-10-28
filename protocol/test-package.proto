@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+package testNamespaceWithSameMethods;
+
+message Empty {}
+
+service TestService {
+    rpc Echo (TextMessage) returns (TextMessage) {}
+    rpc Upper (TextMessage) returns (TextMessage) {}
+    rpc NotImplemented (EmptyMessage) returns (EmptyMessage) {}
+}
+
+message EmptyMessage {}
+
+message TextMessage {
+    required string text = 1;
+}
+
+message EventRequest {
+    required string name = 1;
+    required uint32 delay = 2;
+}
+

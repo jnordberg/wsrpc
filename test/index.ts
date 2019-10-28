@@ -8,7 +8,7 @@ import * as path from 'path'
 import * as crypto from 'crypto'
 import {Server, Client} from './../src'
 import * as wsrpc_client from './../src/client'
-import {waitForEvent} from './../src/utils'
+import {waitForEvent, getFullName} from './../src/utils'
 import {TestService, TextMessage} from './../protocol/test'
 import * as rpcproto from './../protocol/rpc'
 import * as WebSocket from 'ws'
@@ -16,13 +16,30 @@ import * as WebSocket from 'ws'
 const testPort = 1234
 const testAddr = `ws://localhost:${ testPort }`
 const testProtoPath = path.join(__dirname, './../protocol/test.proto')
-const testProto = protobuf.loadSync(testProtoPath)
+const testPackageProtoPath = path.join(__dirname, './../protocol/test-package.proto')
+const testProto = protobuf.loadSync([testProtoPath, testPackageProtoPath])
 
 const serverService = testProto.lookupService('TestService')
+const packagedTestService = testProto.lookupService('testNamespaceWithSameMethods.TestService')
 const serverOpts = {
     port: testPort,
     pingInterval: 0.05,
 }
+
+describe('utils', () => {
+    it('getFullName works for services', function() {
+        assert.equal(getFullName(serverService), 'TestService')
+        assert.equal(getFullName(packagedTestService), 'testNamespaceWithSameMethods.TestService')
+    })
+
+    it('getFullName works for methods', function() {
+        const upperMethod = serverService.methods['Upper']
+        const otherUpperMethod = packagedTestService.methods['Upper']
+
+        assert.equal(getFullName(upperMethod), 'TestService.Upper')
+        assert.equal(getFullName(otherUpperMethod), 'testNamespaceWithSameMethods.TestService.Upper')
+    })
+})
 
 describe('rpc', () => {
 
